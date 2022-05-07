@@ -7,7 +7,7 @@ const val DISTANCE_RELEASE = 60
 
 const val ERROR_DIALOG_REQUEST = 9001
 const val MAPVIEW_BUNDLE_KEY = "MapViewBundleKey"
-const val COLLECTION_NAME = "LocationTrackerUsers"
+
 const val ACCOUNT_INFO = "accountInfo"
 const val LATITUDE = "latitude"
 const val LONGITUDE = "longitude"

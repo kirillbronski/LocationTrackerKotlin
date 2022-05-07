@@ -1,15 +1,22 @@
 package com.foxminded.android.trackerviewer.di.modules
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
 import com.foxminded.android.trackerviewer.di.config.ViewModelKey
+import com.foxminded.android.trackerviewer.factory.MapsViewModelFactory
 import com.foxminded.android.trackerviewer.maps.IMapsRepo
+import com.foxminded.android.trackerviewer.maps.MapsFragment
 import com.foxminded.android.trackerviewer.maps.MapsViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
+import javax.inject.Singleton
 
 @Module(includes = [MainModule::class, RepoModule::class])
 class ViewModelModule {
+
+    lateinit var viewModel: MapsViewModel
 
     @IntoMap
     @ViewModelKey(MapsViewModel::class)
@@ -17,6 +24,15 @@ class ViewModelModule {
     fun providesMapsViewModel(mapsRepoImpl: IMapsRepo): ViewModel {
         return MapsViewModel(mapsRepoImpl)
     }
+
+    @Provides
+    @Singleton
+    fun provideInitMapsViewModel(
+        mapsViewModelFactory: MapsViewModelFactory
+    ): MapsViewModel {
+        return ViewModelProvider(ViewModelStore(), mapsViewModelFactory)[MapsViewModel::class.java]
+    }
+
 
 //    @Provides
 //    @Singleton

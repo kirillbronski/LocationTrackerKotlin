@@ -1,13 +1,13 @@
 package com.foxminded.android.trackerviewer.maps
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.maps.model.LatLng
+import androidx.lifecycle.viewModelScope
+import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
+import com.foxminded.android.trackerviewer.extensions.buildMarkers
 import com.google.android.gms.maps.model.MarkerOptions
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MapsViewModel(
@@ -15,46 +15,27 @@ class MapsViewModel(
 ) : ViewModel() {
 
     private val TAG = MapsViewModel::class.java.simpleName
-    private val scope = CoroutineScope(Dispatchers.IO)
-    private val markers = mutableListOf<MarkerOptions>()
-    private val _markerOptions = MutableLiveData<List<MarkerOptions>>()
-    val markerOptions: LiveData<List<MarkerOptions>> = _markerOptions
+    private val _markerOptions = MutableStateFlow<List<MarkerOptions>>(mutableListOf())
+    val markerOptions: StateFlow<List<MarkerOptions>> = _markerOptions.asStateFlow()
 
     init {
         getDataFromFirestore(null)
     }
 
     fun getDataFromFirestore(date: String?) {
-        markers.clear()
-        scope.launch {
-            mapsRepoImpl.getDataFromFirestore().collect {
-                for (i in it.indices) {
-                    if (date != null && date == it[i].dateAndTime) {
-                        markers.add(getMarkers(
-                            it[i].latitude, it[i].longitude, it[i].accountInfo, it[i].dateAndTime))
-                    }
-                    if (date == null) {
-                        markers.add(getMarkers(
-                            it[i].latitude, it[i].longitude, it[i].accountInfo, it[i].dateAndTime))
-                    }
+        val markers = mutableListOf<MarkerOptions>()
+        viewModelScope.launch {
+            val users = mapsRepoImpl.getDataFromFirestore()
+            for (i in users.indices) {
+                if (date == null || date == users[i].dateAndTime) {
+                    markers.add(User().buildMarkers(
+                        users[i].latitude,
+                        users[i].longitude,
+                        users[i].accountInfo,
+                        users[i].dateAndTime))
                 }
-                _markerOptions.postValue(markers)
             }
+            _markerOptions.value = markers
         }
-    }
-
-    private fun getMarkers(
-        latitude: Double, longitude: Double,
-        accountInfo: String?, dateAndTime: String?,
-    ): MarkerOptions {
-        return MarkerOptions()
-            .position(LatLng(latitude, longitude))
-            .title(accountInfo)
-            .snippet(dateAndTime)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        scope.cancel()
     }
 }

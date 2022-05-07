@@ -13,23 +13,17 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.*
-import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.constraintlayout.widget.ConstraintSet.VISIBLE
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
+import androidx.lifecycle.lifecycleScope
 import com.foxminded.android.trackerviewer.R
 import com.foxminded.android.trackerviewer.databinding.FragmentMapsBinding
 import com.foxminded.android.trackerviewer.di.config.App
-import com.foxminded.android.trackerviewer.factory.MapsViewModelFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import java.util.*
 import javax.inject.Inject
 
@@ -39,34 +33,38 @@ class MapsFragment : Fragment() {
     private lateinit var binding: FragmentMapsBinding
 
     @Inject
-    lateinit var mapsViewModelFactory: MapsViewModelFactory
+    lateinit var viewModel: MapsViewModel
 
-    private lateinit var viewModel: MapsViewModel
+    private val callback = OnMapReadyCallback { map ->
 
-    @SuppressLint("MissingPermission")
-    private val callback = OnMapReadyCallback(fun(map: GoogleMap) {
+        settingsMap(map)
 
         binding.chipMap.setOnCloseIconClickListener {
             map.clear()
             it.visibility = View.GONE
             viewModel.getDataFromFirestore(date = null)
         }
-        map.isMyLocationEnabled = true
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.markerOptions.collect {
+                map.clear()
+                it.forEach { marker ->
+                    map.addMarker(marker)
+                }
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun settingsMap(map: GoogleMap) {
+        try {
+            map.isMyLocationEnabled = true
+        } catch (e: SecurityException) {
+            Log.e(TAG, "error: " + e.message.toString(), e)
+        }
         map.isTrafficEnabled = true
         map.uiSettings.isZoomControlsEnabled = true
         map.uiSettings.setAllGesturesEnabled(true)
-
-        viewModel.markerOptions.observe(this) {
-            map.clear()
-            for (i in it.indices){
-                map.addMarker(it[i])
-            }
-        }
-    })
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this, mapsViewModelFactory)[MapsViewModel::class.java]
     }
 
     override fun onAttach(context: Context) {
@@ -98,9 +96,18 @@ class MapsFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.edit_calendar -> initCalendar()
-//            R.id.sign_out_menu -> signOut()
-            R.id.close_app -> closeApp()
+            R.id.edit_calendar -> {
+                initCalendar()
+                return true
+            }
+            R.id.sign_out_menu -> {
+                //TODO("add sign out function")
+                return true
+            }
+            R.id.close_app -> {
+                closeApp()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -114,9 +121,9 @@ class MapsFragment : Fragment() {
         DatePickerDialog(
             requireContext(),
             { _, year1, month1, dayOfMonth1 ->
-                val month2 = month1 + 1
-                viewModel.getDataFromFirestore(date = "$year1-$month2-$dayOfMonth1")
-                binding.chipMap.text = "$year1-$month2-$dayOfMonth1"
+                val correctMonth = month1 + 1
+                viewModel.getDataFromFirestore(date = "$year1-$correctMonth-$dayOfMonth1")
+                binding.chipMap.text = "$year1-$correctMonth-$dayOfMonth1"
                 binding.chipMap.visibility = View.VISIBLE
             }, year, month, dayOfMonth
         ).show()
@@ -159,20 +166,15 @@ class MapsFragment : Fragment() {
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
             Uri.fromParts("package", activity?.packageName?.toString(), null)
         )
-        if (activity?.packageManager?.resolveActivity(
-                appSettingsIntent,
-                PackageManager.MATCH_DEFAULT_ONLY
-            ) == null
-        ) {
-            Toast.makeText(
-                requireContext(),
-                R.string.permissions_denied_forever,
-                Toast.LENGTH_SHORT
-            ).show()
-        } else {
+
+        activity?.packageManager?.resolveActivity(
+            appSettingsIntent,
+            PackageManager.MATCH_DEFAULT_ONLY
+        )?.let {
             AlertDialog.Builder(requireContext())
                 .setTitle(R.string.permission_denied)
                 .setMessage(R.string.permission_denied_forever_message)
+                .setCancelable(false)
                 .setPositiveButton("Open") { _, _ ->
                     startActivity(appSettingsIntent)
                 }
@@ -190,11 +192,12 @@ class MapsFragment : Fragment() {
     private fun isMapsEnabled(): Boolean {
         val locationManager: LocationManager =
             context?.getSystemService(Context.LOCATION_SERVICE) as (LocationManager)
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        return if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps()
-            return false
+            false
+        } else {
+            true
         }
-        return true
     }
 
     private fun buildAlertMessageNoGps() {

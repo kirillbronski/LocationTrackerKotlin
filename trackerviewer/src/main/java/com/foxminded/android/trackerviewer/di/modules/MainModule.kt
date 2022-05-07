@@ -2,6 +2,7 @@ package com.foxminded.android.trackerviewer.di.modules
 
 import androidx.lifecycle.ViewModel
 import com.foxminded.android.trackerviewer.factory.MapsViewModelFactory
+import com.foxminded.android.trackerviewer.maps.MapsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
