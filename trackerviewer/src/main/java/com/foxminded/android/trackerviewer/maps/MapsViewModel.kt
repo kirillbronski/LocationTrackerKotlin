@@ -25,14 +25,13 @@ class MapsViewModel(
     fun getDataFromFirestore(date: String?) {
         val markers = mutableListOf<MarkerOptions>()
         viewModelScope.launch {
-            val users = mapsRepoImpl.getDataFromFirestore()
-            for (i in users.indices) {
-                if (date == null || date == users[i].dateAndTime) {
+            mapsRepoImpl.getDataFromFirestore().forEach {
+                if (date == null || date == it.dateAndTime) {
                     markers.add(User().buildMarkers(
-                        users[i].latitude,
-                        users[i].longitude,
-                        users[i].accountInfo,
-                        users[i].dateAndTime))
+                        it.latitude,
+                        it.longitude,
+                        it.accountInfo,
+                        it.dateAndTime))
                 }
             }
             _markerOptions.value = markers
