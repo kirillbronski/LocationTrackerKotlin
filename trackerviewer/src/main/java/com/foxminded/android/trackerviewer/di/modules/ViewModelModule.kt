@@ -16,8 +16,6 @@ import javax.inject.Singleton
 @Module(includes = [MainModule::class, RepoModule::class])
 class ViewModelModule {
 
-    lateinit var viewModel: MapsViewModel
-
     @IntoMap
     @ViewModelKey(MapsViewModel::class)
     @Provides
