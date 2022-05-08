@@ -27,21 +27,6 @@ class MapsRepoImpl(
         return users
     }
 
-    //                .addOnCompleteListener { task: Task<QuerySnapshot> ->
-//                    if (task.isSuccessful) {
-//                        for (document in task.result) {
-//                            users.add(document.toObject(User::class.java))
-//                        }
-//                        trySend(users)
-//                    } else {
-//                        close(task.exception)
-//                        Log.d(TAG, "Error getting documents: ", task.exception)
-//                    }
-//                }.addOnFailureListener {
-//                    it.message
-//                    Log.d(TAG, "Error getting documents: ", it)
-//                }.await()
-
     override suspend fun signOut() {
         if (firebaseAuth.currentUser != null) {
             firebaseAuth.signOut()
