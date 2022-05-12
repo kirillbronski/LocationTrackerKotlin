@@ -3,10 +3,15 @@ package com.foxminded.android.trackerviewer.di.modules
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
+import com.foxminded.android.locationtrackerkotlin.phoneauth.IPhoneAuthRepo
+import com.foxminded.android.locationtrackerkotlin.phoneauth.PhoneAuthViewModel
+import com.foxminded.android.locationtrackerkotlin.signin.ISignInRepo
+import com.foxminded.android.locationtrackerkotlin.signin.SignInViewModel
+import com.foxminded.android.locationtrackerkotlin.signup.ISignUpRepo
+import com.foxminded.android.locationtrackerkotlin.signup.SignUpViewModel
 import com.foxminded.android.trackerviewer.di.config.ViewModelKey
-import com.foxminded.android.trackerviewer.factory.MapsViewModelFactory
+import com.foxminded.android.trackerviewer.factory.ViewModelFactory
 import com.foxminded.android.trackerviewer.maps.IMapsRepo
-import com.foxminded.android.trackerviewer.maps.MapsFragment
 import com.foxminded.android.trackerviewer.maps.MapsViewModel
 import dagger.Module
 import dagger.Provides
@@ -26,47 +31,54 @@ class ViewModelModule {
     @Provides
     @Singleton
     fun provideInitMapsViewModel(
-        mapsViewModelFactory: MapsViewModelFactory
+        viewModelFactory: ViewModelFactory
     ): MapsViewModel {
-        return ViewModelProvider(ViewModelStore(), mapsViewModelFactory)[MapsViewModel::class.java]
+        return ViewModelProvider(ViewModelStore(), viewModelFactory)[MapsViewModel::class.java]
     }
 
+    @IntoMap
+    @ViewModelKey(SignInViewModel::class)
+    @Provides
+    fun providesSignInViewModel(signInRepo: ISignInRepo): ViewModel {
+        return SignInViewModel(signInRepo)
+    }
 
-//    @Provides
-//    @Singleton
-//    fun provideSignInPresenter(
-//        signInRepo: ISignInRepo?,
-//        compositeDisposable: CompositeDisposable?
-//    ): SignInContract.Presenter? {
-//        return CommonPresenterSignIn(signInRepo, compositeDisposable)
-//    }
-//
-//    @Provides
-//    @Singleton
-//    fun provideSignUpPresenter(
-//        signUpRepo: ISignUpRepo?,
-//        compositeDisposable: CompositeDisposable?
-//    ): SignUpContract.Presenter? {
-//        return CommonPresenterSignUp(signUpRepo, compositeDisposable)
-//    }
-//
-//    @Provides
-//    @Singleton
-//    fun providePhoneAuthPresenter(
-//        phoneAuthRepo: IPhoneAuthRepo?,
-//        compositeDisposable: CompositeDisposable?
-//    ): PhoneAuthContract.Presenter? {
-//        return CommonPresenterPhone(phoneAuthRepo, compositeDisposable)
-//    }
-//
-//    @Provides
-//    @Singleton
-//    fun provideMapsPresenter(
-//        compositeDisposable: CompositeDisposable?,
-//        mapsRepo: IMapsRepo?,
-//        maps: IMaps?
-//    ): MapsContract.Presenter? {
-//        return MapsPresenter(compositeDisposable, mapsRepo, maps)
-//    }
+    @Provides
+    @Singleton
+    fun provideInitSignInViewModel(
+        viewModelFactory: ViewModelFactory
+    ): SignInViewModel {
+        return ViewModelProvider(ViewModelStore(), viewModelFactory)[SignInViewModel::class.java]
+    }
+
+    @IntoMap
+    @ViewModelKey(SignUpViewModel::class)
+    @Provides
+    fun providesSignUpViewModel(signUpRepo: ISignUpRepo): ViewModel {
+        return SignUpViewModel(signUpRepo)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInitSignUpViewModel(
+        viewModelFactory: ViewModelFactory
+    ): SignUpViewModel {
+        return ViewModelProvider(ViewModelStore(), viewModelFactory)[SignUpViewModel::class.java]
+    }
+
+    @IntoMap
+    @ViewModelKey(PhoneAuthViewModel::class)
+    @Provides
+    fun providesPhoneAuthViewModel(phoneAuthRepo: IPhoneAuthRepo): ViewModel {
+        return PhoneAuthViewModel(phoneAuthRepo)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInitPhoneAuthViewModel(
+        viewModelFactory: ViewModelFactory
+    ): PhoneAuthViewModel {
+        return ViewModelProvider(ViewModelStore(), viewModelFactory)[PhoneAuthViewModel::class.java]
+    }
 
 }

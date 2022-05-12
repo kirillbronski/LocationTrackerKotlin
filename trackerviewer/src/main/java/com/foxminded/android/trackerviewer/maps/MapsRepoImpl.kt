@@ -1,5 +1,6 @@
 package com.foxminded.android.trackerviewer.maps
 
+import android.util.Log
 import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -16,15 +17,23 @@ class MapsRepoImpl(
 
     override suspend fun getDataFromFirestore(): List<User> {
         val users = mutableListOf<User>()
-        firebaseFirestore
-            .collection(COLLECTION_NAME)
-            .get()
-            .await()
-            .toObjects(User::class.java)
-            .forEach {
-                users.add(it)
-            }
-        return users
+        return try {
+            firebaseFirestore
+                .collection(COLLECTION_NAME)
+                .get()
+                .await()
+                .toObjects(User::class.java)
+                .forEach {
+                    users.add(it)
+                }
+            users
+        } catch (e: Exception) {
+            users.clear()
+            Log.e(TAG, "getDataFromFirestore: $e")
+            users
+        }
+
+
     }
 
     override suspend fun signOut() {

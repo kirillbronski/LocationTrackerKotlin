@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TrackerViewer</string>
+    <string name="app_name">Tracker Viewer</string>
     <string name="all_permission_granted">Permissions granted</string>
     <string name="permissions_denied_forever">Permissions denied forever</string>
     <string name="permission_denied">Permission denied</string>

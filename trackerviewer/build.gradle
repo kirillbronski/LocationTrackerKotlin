@@ -48,6 +48,8 @@ dependencies {
 
     // Dagger2
     implementation 'com.google.dagger:dagger:2.41'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
     kapt 'com.google.dagger:dagger-compiler:2.41'
 
     // Maps

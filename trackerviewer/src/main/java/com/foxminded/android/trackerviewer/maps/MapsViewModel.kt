@@ -3,7 +3,7 @@ package com.foxminded.android.trackerviewer.maps
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
-import com.foxminded.android.trackerviewer.extensions.buildMarkers
+import com.foxminded.android.locationtrackerkotlin.extensions.buildMarkers
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

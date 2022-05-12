@@ -1,5 +1,11 @@
 package com.foxminded.android.trackerviewer.di.modules
 
+import com.foxminded.android.locationtrackerkotlin.phoneauth.IPhoneAuthRepo
+import com.foxminded.android.locationtrackerkotlin.phoneauth.PhoneAuthRepoImpl
+import com.foxminded.android.locationtrackerkotlin.signin.ISignInRepo
+import com.foxminded.android.locationtrackerkotlin.signin.SignInRepoImpl
+import com.foxminded.android.locationtrackerkotlin.signup.ISignUpRepo
+import com.foxminded.android.locationtrackerkotlin.signup.SignUpRepoImpl
 import com.foxminded.android.trackerviewer.maps.IMapsRepo
 import com.foxminded.android.trackerviewer.maps.MapsRepoImpl
 import com.google.firebase.auth.FirebaseAuth
@@ -11,23 +17,23 @@ import javax.inject.Singleton
 @Module(includes = [MainModule::class])
 class RepoModule {
 
-//    @Provides
-//    @Singleton
-//    fun signUpRepo(auth: FirebaseAuth?): ISignUpRepo? {
-//        return SignUpRepoImpl(auth)
-//    }
-//
-//    @Provides
-//    @Singleton
-//    fun signInRepo(auth: FirebaseAuth?): ISignInRepo? {
-//        return SignInRepoImpl(auth)
-//    }
-//
-//    @Provides
-//    @Singleton
-//    fun phoneAuthRepo(auth: FirebaseAuth?): IPhoneAuthRepo? {
-//        return PhoneAuthRepoImpl(auth)
-//    }
+    @Provides
+    @Singleton
+    fun signUpRepo(firebaseAuth: FirebaseAuth): ISignUpRepo {
+        return SignUpRepoImpl(firebaseAuth)
+    }
+
+    @Provides
+    @Singleton
+    fun signInRepo(firebaseAuth: FirebaseAuth): ISignInRepo {
+        return SignInRepoImpl(firebaseAuth)
+    }
+
+    @Provides
+    @Singleton
+    fun phoneAuthRepo(firebaseAuth: FirebaseAuth): IPhoneAuthRepo {
+        return PhoneAuthRepoImpl(firebaseAuth)
+    }
 
     @Provides
     @Singleton
