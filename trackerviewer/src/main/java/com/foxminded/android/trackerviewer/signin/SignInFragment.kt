@@ -42,7 +42,6 @@ class SignInFragment : SignInCommonFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (activity?.application as App).mainComponent.injectSignInFragment(this)
-        viewModel.requestAccountInfo()
     }
 
     override fun onCreateView(
