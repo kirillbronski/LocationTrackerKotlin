@@ -8,7 +8,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-abstract class SignUpCommonFragment: BaseCommonFragment() {
+abstract class SignUpCommonFragment : BaseCommonFragment() {
 
     private var resultPassword = ""
 
@@ -25,17 +25,17 @@ abstract class SignUpCommonFragment: BaseCommonFragment() {
     }
 
     fun textFieldPasswordAgainListener(passwordAgain: EditText, button: Button): Flow<String> {
-       return callbackFlow {
-           passwordAgain.addTextChangedListener {
-               if (it.toString().length >= 6 && it.toString() == resultPassword) {
-                   trySend(it.toString())
-                   button.isEnabled = true
-               } else {
-                   button.isEnabled = false
-               }
-           }
-           awaitClose()
-       }
+        return callbackFlow {
+            passwordAgain.addTextChangedListener {
+                if (it.toString().length >= 6 && it.toString() == resultPassword) {
+                    trySend(it.toString())
+                    button.isEnabled = true
+                } else {
+                    button.isEnabled = false
+                }
+            }
+            awaitClose()
+        }
     }
 
 }

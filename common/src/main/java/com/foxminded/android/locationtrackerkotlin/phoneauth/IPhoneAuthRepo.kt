@@ -4,7 +4,6 @@ import android.app.Activity
 import com.foxminded.android.locationtrackerkotlin.utils.PhoneAuthResult
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthProvider
 
 interface IPhoneAuthRepo {
 

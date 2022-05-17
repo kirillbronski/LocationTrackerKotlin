@@ -2,8 +2,10 @@ package com.foxminded.android.trackerviewer.maps
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
 import com.foxminded.android.locationtrackerkotlin.extensions.buildMarkers
+import com.foxminded.android.locationtrackerkotlin.extensions.set
+import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
+import com.foxminded.android.locationtrackerkotlin.state.State
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,8 +17,8 @@ class MapsViewModel(
 ) : ViewModel() {
 
     private val TAG = MapsViewModel::class.java.simpleName
-    private val _markerOptions = MutableStateFlow<List<MarkerOptions>>(mutableListOf())
-    val markerOptions: StateFlow<List<MarkerOptions>> = _markerOptions.asStateFlow()
+    private val _mapsState = MutableStateFlow<State>(State.DefaultState)
+    val mapsState: StateFlow<State> = _mapsState.asStateFlow()
 
     init {
         getDataFromFirestore(null)
@@ -34,7 +36,15 @@ class MapsViewModel(
                         it.dateAndTime))
                 }
             }
-            _markerOptions.value = markers
+            _mapsState.set(State.MarkerState(markers))
+        }
+    }
+
+    fun signOut() {
+        viewModelScope.launch {
+            if (mapsRepoImpl.signOut()) {
+                _mapsState.set(State.DefaultState)
+            }
         }
     }
 }

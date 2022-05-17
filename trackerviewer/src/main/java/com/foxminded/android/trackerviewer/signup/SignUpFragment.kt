@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import com.foxminded.android.locationtrackerkotlin.signup.SignUpCommonFragment
 import com.foxminded.android.locationtrackerkotlin.signup.SignUpViewModel

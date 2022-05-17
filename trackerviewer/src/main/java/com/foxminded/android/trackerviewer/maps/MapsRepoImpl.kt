@@ -6,7 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
-const val COLLECTION_NAME = "LocationTrackerUsers"
+private const val COLLECTION_NAME = "LocationTrackerUsers"
 
 class MapsRepoImpl(
     private val firebaseFirestore: FirebaseFirestore,
@@ -36,9 +36,11 @@ class MapsRepoImpl(
 
     }
 
-    override suspend fun signOut() {
-        if (firebaseAuth.currentUser != null) {
-            firebaseAuth.signOut()
+    override suspend fun signOut(): Boolean {
+        firebaseAuth.signOut()
+        if (firebaseAuth.currentUser == null) {
+            return true
         }
+        return false
     }
 }

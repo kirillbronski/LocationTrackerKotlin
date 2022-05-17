@@ -4,6 +4,7 @@ import android.os.CountDownTimer
 import android.widget.Button
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
+import com.foxminded.android.locationtrackerkotlin.R
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -45,9 +46,10 @@ abstract class PhoneAuthCommonFragment : BaseCommonFragment() {
                 button.isEnabled = false
                 button.text = (millisUntilFinished / 1000).toString()
             }
+
             override fun onFinish() {
                 button.isEnabled = true
-                button.text = "Send"
+                button.text = getString(R.string.timer_finish)
             }
         }.start()
     }

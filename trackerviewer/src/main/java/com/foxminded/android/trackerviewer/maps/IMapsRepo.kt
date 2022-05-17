@@ -6,6 +6,6 @@ interface IMapsRepo {
 
     suspend fun getDataFromFirestore(): List<User>
 
-    suspend fun signOut()
+    suspend fun signOut(): Boolean
 
 }

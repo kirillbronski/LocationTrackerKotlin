@@ -191,9 +191,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="@dimen/button_margin"
+        android:enabled="false"
         android:padding="@dimen/button_padding"
         android:text="@string/sign_in"
-        android:enabled="false"
         app:layout_constraintBottom_toTopOf="@id/phone_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

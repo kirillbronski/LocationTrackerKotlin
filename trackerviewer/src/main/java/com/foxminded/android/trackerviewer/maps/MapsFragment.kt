@@ -18,9 +18,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.foxminded.android.locationtrackerkotlin.state.State
 import com.foxminded.android.trackerviewer.R
 import com.foxminded.android.trackerviewer.databinding.FragmentMapsBinding
 import com.foxminded.android.trackerviewer.di.config.App
+import com.foxminded.android.trackerviewer.signin.SignInFragment
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -46,11 +48,20 @@ class MapsFragment : Fragment() {
         }
 
         lifecycleScope.launchWhenStarted {
-            viewModel.markerOptions.collect {
-                map.clear()
-                it.forEach { marker ->
-                    map.addMarker(marker)
+            viewModel.mapsState.collect {
+                when (it) {
+                    is State.MarkerState -> {
+                        map.clear()
+                        it.markers.forEach { marker ->
+                            map.addMarker(marker)
+                        }
+                    }
+                    is State.SignOut -> {
+                        SignInFragment.newInstance()
+                    }
+                    else -> {}
                 }
+
             }
         }
     }
@@ -101,7 +112,7 @@ class MapsFragment : Fragment() {
                 return true
             }
             R.id.sign_out_menu -> {
-                //TODO("add sign out function")
+                viewModel.signOut()
                 return true
             }
             R.id.close_app -> {

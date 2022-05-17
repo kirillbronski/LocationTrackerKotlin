@@ -17,12 +17,12 @@
         android:id="@+id/chip_map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:closeIconEnabled="true"
         android:textSize="@dimen/chip_text_size"
         android:visibility="gone"
         app:chipBackgroundColor="@color/purple_200"
+        app:closeIconEnabled="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

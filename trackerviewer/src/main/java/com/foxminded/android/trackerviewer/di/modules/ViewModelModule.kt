@@ -31,7 +31,7 @@ class ViewModelModule {
     @Provides
     @Singleton
     fun provideInitMapsViewModel(
-        viewModelFactory: ViewModelFactory
+        viewModelFactory: ViewModelFactory,
     ): MapsViewModel {
         return ViewModelProvider(ViewModelStore(), viewModelFactory)[MapsViewModel::class.java]
     }
@@ -46,7 +46,7 @@ class ViewModelModule {
     @Provides
     @Singleton
     fun provideInitSignInViewModel(
-        viewModelFactory: ViewModelFactory
+        viewModelFactory: ViewModelFactory,
     ): SignInViewModel {
         return ViewModelProvider(ViewModelStore(), viewModelFactory)[SignInViewModel::class.java]
     }
@@ -61,7 +61,7 @@ class ViewModelModule {
     @Provides
     @Singleton
     fun provideInitSignUpViewModel(
-        viewModelFactory: ViewModelFactory
+        viewModelFactory: ViewModelFactory,
     ): SignUpViewModel {
         return ViewModelProvider(ViewModelStore(), viewModelFactory)[SignUpViewModel::class.java]
     }
@@ -76,7 +76,7 @@ class ViewModelModule {
     @Provides
     @Singleton
     fun provideInitPhoneAuthViewModel(
-        viewModelFactory: ViewModelFactory
+        viewModelFactory: ViewModelFactory,
     ): PhoneAuthViewModel {
         return ViewModelProvider(ViewModelStore(), viewModelFactory)[PhoneAuthViewModel::class.java]
     }

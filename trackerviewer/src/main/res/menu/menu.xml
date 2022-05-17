@@ -4,8 +4,8 @@
 
     <item
         android:id="@+id/edit_calendar"
-        android:title="@string/calendar"
         android:icon="@drawable/calendar_24"
+        android:title="@string/calendar"
         app:showAsAction="ifRoom" />
 
     <item

@@ -37,7 +37,10 @@ class RepoModule {
 
     @Provides
     @Singleton
-    fun provideMapsRepo(firebaseFirestore: FirebaseFirestore, firebaseAuth: FirebaseAuth): IMapsRepo {
+    fun provideMapsRepo(
+        firebaseFirestore: FirebaseFirestore,
+        firebaseAuth: FirebaseAuth,
+    ): IMapsRepo {
         return MapsRepoImpl(firebaseFirestore, firebaseAuth)
     }
 

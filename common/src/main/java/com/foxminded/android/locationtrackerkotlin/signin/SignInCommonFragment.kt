@@ -59,17 +59,17 @@ abstract class SignInCommonFragment : BaseCommonFragment() {
     }
 
     fun textFieldPasswordListener(password: EditText, button: Button): Flow<String> {
-       return callbackFlow {
-           password.addTextChangedListener {
-               if (it.toString().length >= 6) {
-                   trySend(it.toString())
-                   button.isEnabled = true
-               } else {
-                   button.isEnabled = false
-               }
-           }
-           awaitClose()
-       }
+        return callbackFlow {
+            password.addTextChangedListener {
+                if (it.toString().length >= 6) {
+                    trySend(it.toString())
+                    button.isEnabled = true
+                } else {
+                    button.isEnabled = false
+                }
+            }
+            awaitClose()
+        }
     }
 
     fun textFieldResetPasswordListener(email: EditText, button: Button): Flow<String> {
