@@ -9,15 +9,22 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
-import com.foxminded.android.locationtrackerkotlin.phoneauth.PhoneAuthCommonFragment
+import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.phoneauth.PhoneAuthViewModel
-import com.foxminded.android.locationtrackerkotlin.state.State
+import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.state.PhoneAuthButtonState
+import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
+import com.foxminded.android.trackerapp.accountinfo.AccountInfoFragment
 import com.foxminded.android.trackerapp.databinding.FragmentPhoneAuthBinding
 import com.foxminded.android.trackerapp.di.config.App
-import com.foxminded.android.trackerapp.maps.MapsFragment
 import javax.inject.Inject
 
-class PhoneAuthFragment : PhoneAuthCommonFragment() {
+private const val SEND_SMS = 1
+private const val VERIFY_PHONE_WITH_CODE = 2
+private const val SIGN_IN_WITH_CREDENTIAL = 3
+private const val RESEND_CODE = 4
+
+class PhoneAuthFragment : BaseCommonFragment() {
 
     private val TAG = PhoneAuthFragment::class.java.simpleName
     private lateinit var binding: FragmentPhoneAuthBinding
@@ -41,7 +48,7 @@ class PhoneAuthFragment : PhoneAuthCommonFragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPhoneAuthBinding.inflate(inflater, container, false)
-        initViewsForCommonFragment()
+        initBindingViews()
         return binding.root
     }
 
@@ -62,30 +69,81 @@ class PhoneAuthFragment : PhoneAuthCommonFragment() {
             resendButton.isEnabled = false
         }
         checkTextFields()
-        checkState()
+        checkViewState()
+        checkButtonState()
     }
 
-    private fun checkState() {
+    private fun checkViewState() {
         lifecycleScope.launchWhenStarted {
-            viewModel.phoneAuthState.collect {
+            viewModel.viewState.collect {
                 when (it) {
-                    is State.SucceededState -> {
-                        displayMapsFragment()
+                    is BaseViewState.SuccessState -> {
+                        when (it.state) {
+                            SEND_SMS -> {
+                                showToastMessage(it.stringValue)
+                            }
+                            VERIFY_PHONE_WITH_CODE -> {
+                                showToastMessage(it.stringValue)
+                            }
+                            SIGN_IN_WITH_CREDENTIAL -> {
+                                displayAccountInfoFragment(it.stringValue)
+                            }
+                            RESEND_CODE -> {
+                                showToastMessage(it.stringValue)
+                            }
+                        }
                         hideProgressIndicator(progressBar)
                     }
-                    is State.ProgressIndicatorState -> {
+                    is BaseViewState.LoadingState -> {
                         showProgressIndicator(progressBar)
                     }
-                    is State.ButtonTimer -> {
-                        startButtonTimer(startButton)
-                    }
-                    is State.SmsSendState -> {
-                        showToastMessage(it.value)
-                        hideProgressIndicator(progressBar)
-                    }
-                    is State.ErrorState -> {
+                    is BaseViewState.ErrorState -> {
                         showToastMessage(it.message)
                         hideProgressIndicator(progressBar)
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun checkButtonState() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.buttonState.collect {
+                when (it) {
+                    is PhoneAuthButtonState.TimeButtonState<*> -> {
+                        startButton.isEnabled = false
+                        when (it.text) {
+                            is Long -> {
+                                startButton.text = it.text.toString()
+                                phoneNumberEditText.isEnabled = false
+                            }
+                            is String -> {
+                                startButton.text = it.text.toString()
+                                startButton.isEnabled = true
+                                phoneNumberEditText.isEnabled = true
+                            }
+                        }
+                    }
+                    is PhoneAuthButtonState.IsButtonSendEnablerState -> {
+                        when (it.enabler) {
+                            true -> {
+                                startButton.isEnabled = true
+                            }
+                            false -> {
+                                startButton.isEnabled = false
+                            }
+                        }
+                    }
+                    is PhoneAuthButtonState.IsButtonVerifyEnablerState -> {
+                        when (it.enabler) {
+                            true -> {
+                                verifyButton.isEnabled = true
+                            }
+                            false -> {
+                                verifyButton.isEnabled = false
+                            }
+                        }
                     }
                     else -> {}
                 }
@@ -96,19 +154,19 @@ class PhoneAuthFragment : PhoneAuthCommonFragment() {
     private fun checkTextFields() {
 
         lifecycleScope.launchWhenStarted {
-            textFieldPhoneListener(phoneNumberEditText, startButton).collect {
-                viewModel.requestPhoneFromUser(it)
+            textFieldListener(phoneNumberEditText).collect {
+                viewModel.checkPhoneField(it)
             }
         }
 
         lifecycleScope.launchWhenStarted {
-            textFieldSmsListener(smsCodeEditText, verifyButton).collect {
-                viewModel.requestCodeFromUser(it)
+            textFieldListener(smsCodeEditText).collect {
+                viewModel.checkSmsCodeField(it)
             }
         }
     }
 
-    private fun initViewsForCommonFragment() {
+    private fun initBindingViews() {
         progressBar = binding.phoneAuthCommon.progressBarId.commonPb
         startButton = binding.phoneAuthCommon.startButton
         verifyButton = binding.phoneAuthCommon.verifyButton
@@ -117,8 +175,8 @@ class PhoneAuthFragment : PhoneAuthCommonFragment() {
         smsCodeEditText = binding.phoneAuthCommon.smsCodeEditText
     }
 
-    private fun displayMapsFragment() {
-        displayFragment(MapsFragment.newInstance())
+    private fun displayAccountInfoFragment(accountInfo: String?) {
+        displayFragment(AccountInfoFragment.newInstance(accountInfo))
     }
 
     companion object {

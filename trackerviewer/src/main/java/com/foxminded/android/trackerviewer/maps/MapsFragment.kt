@@ -18,7 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.foxminded.android.locationtrackerkotlin.state.State
+import com.foxminded.android.locationtrackerkotlin.state.MapsState
 import com.foxminded.android.trackerviewer.R
 import com.foxminded.android.trackerviewer.databinding.FragmentMapsBinding
 import com.foxminded.android.trackerviewer.di.config.App
@@ -46,36 +46,8 @@ class MapsFragment : Fragment() {
             it.visibility = View.GONE
             viewModel.getDataFromFirestore(date = null)
         }
+        checkState(map)
 
-        lifecycleScope.launchWhenStarted {
-            viewModel.mapsState.collect {
-                when (it) {
-                    is State.MarkerState -> {
-                        map.clear()
-                        it.markers.forEach { marker ->
-                            map.addMarker(marker)
-                        }
-                    }
-                    is State.SignOut -> {
-                        SignInFragment.newInstance()
-                    }
-                    else -> {}
-                }
-
-            }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun settingsMap(map: GoogleMap) {
-        try {
-            map.isMyLocationEnabled = true
-        } catch (e: SecurityException) {
-            Log.e(TAG, "error: " + e.message.toString(), e)
-        }
-        map.isTrafficEnabled = true
-        map.uiSettings.isZoomControlsEnabled = true
-        map.uiSettings.setAllGesturesEnabled(true)
     }
 
     override fun onAttach(context: Context) {
@@ -98,6 +70,37 @@ class MapsFragment : Fragment() {
         permissionsRequestLauncher.launch(arrayOf(ACCESS_FINE_LOCATION, WRITE_EXTERNAL_STORAGE))
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+    }
+
+    private fun checkState(map: GoogleMap) {
+        lifecycleScope.launchWhenStarted {
+            viewModel.mapsState.collect {
+                when (it) {
+                    is MapsState.MarkerState -> {
+                        map.clear()
+                        it.markers.forEach { marker ->
+                            map.addMarker(marker)
+                        }
+                    }
+                    is MapsState.DefaultState -> {
+                        SignInFragment.newInstance()
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun settingsMap(map: GoogleMap) {
+        try {
+            map.isMyLocationEnabled = true
+        } catch (e: SecurityException) {
+            Log.e(TAG, "error: " + e.message.toString(), e)
+        }
+        map.isTrafficEnabled = true
+        map.uiSettings.isZoomControlsEnabled = true
+        map.uiSettings.setAllGesturesEnabled(true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

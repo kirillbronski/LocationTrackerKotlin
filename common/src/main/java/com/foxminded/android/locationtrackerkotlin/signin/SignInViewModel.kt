@@ -1,14 +1,17 @@
 package com.foxminded.android.locationtrackerkotlin.signin
 
-import android.text.TextUtils
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.foxminded.android.locationtrackerkotlin.extensions.set
-import com.foxminded.android.locationtrackerkotlin.state.State
+import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.state.SignInButtonState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+
+private const val SIGN_IN = 1
+private const val ACCOUNT = 2
 
 class SignInViewModel(
     private var signInRepo: ISignInRepo,
@@ -16,85 +19,60 @@ class SignInViewModel(
 
     private val TAG = SignInViewModel::class.java.simpleName
 
-    private val _signInState = MutableStateFlow<State>(State.DefaultState)
-    val signInState: StateFlow<State> = _signInState.asStateFlow()
+    private val _viewState = MutableStateFlow<BaseViewState>(BaseViewState.DefaultState)
+    val viewState: StateFlow<BaseViewState> = _viewState.asStateFlow()
 
-    private var email: String = ""
-    private var password: String = ""
+    private val _signInButtonState =
+        MutableStateFlow<SignInButtonState>(SignInButtonState.DefaultState)
+    val signInButtonState: StateFlow<SignInButtonState> = _signInButtonState.asStateFlow()
 
-    fun requestEmailFromUser(email: String): String {
-        return email.also { this.email = it }
-    }
+    private var email = MutableStateFlow("")
+    private var password = MutableStateFlow("")
 
-    fun requestPasswordFromUser(password: String): String {
-        return password.also { this.password = it }
-    }
-
-    fun signIn() {
-        if (validateForm()) {
-            _signInState.set(State.ProgressIndicatorState)
-            viewModelScope.launch {
-                if (signInRepo.signIn(email, password) != null) {
-                    _signInState.set(State.SucceededState)
-                } else {
-                    _signInState.set(State.ErrorState("Failed! Details in logs"))
-                }
+    fun checkEmailAndPasswordFieldsValue(
+        email1: String?,
+        password1: String?,
+    ) {
+        email1.also {
+            if (it != null) {
+                this.email.value = it
             }
+        }
+        password1.also {
+            if (it != null) {
+                this.password.value = it
+            }
+        }
+
+        if (email.value.contains("@") && email.value.contains(".")
+            && password.value.length >= 6
+        ) {
+            _signInButtonState.value = SignInButtonState.IsButtonSignInEnablerState(true)
+        } else {
+            _signInButtonState.value = SignInButtonState.IsButtonSignInEnablerState(false)
         }
     }
 
-    fun passwordReset() {
-        if (isValidEmail()) {
-            _signInState.set(State.ProgressIndicatorState)
-            viewModelScope.launch {
-                if (signInRepo.sendPasswordReset(email)) {
-                    _signInState.set(State.PasswordResetState(email))
-                } else {
-                    _signInState.set(State.ErrorState("Failed! Details in logs"))
-                }
+    fun signIn() {
+        _viewState.value = BaseViewState.LoadingState
+        viewModelScope.launch(Dispatchers.IO) {
+            if (signInRepo.signIn(email.value, password.value) != null) {
+                _viewState.value = BaseViewState.SuccessState(SIGN_IN, "Sign in Success!")
+            } else {
+                _viewState.value = BaseViewState.ErrorState("Failed! Details in logs")
             }
         }
     }
 
     fun requestAccountInfo() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val userInfo = signInRepo.currentFirebaseUser()
             if (userInfo != null) {
-                _signInState.set(State.AccountInfoState(userInfo))
+                _viewState.value =
+                    BaseViewState.SuccessState(state = ACCOUNT, stringValue = userInfo)
             } else {
-                _signInState.set(State.ErrorState("Please sign in or sign up"))
+                _viewState.value = BaseViewState.ErrorState("Please sign in or sign up")
             }
         }
-    }
-
-    fun signOut() {
-        viewModelScope.launch {
-            if (signInRepo.signOut()) {
-                _signInState.set(State.DefaultState)
-            }
-        }
-    }
-
-    private fun validateForm(): Boolean {
-        isValidEmail()
-        return isValidPassword()
-    }
-
-    private fun isValidPassword(): Boolean {
-        if (TextUtils.isEmpty(password) && password.length < 6) {
-            _signInState.set(State.ErrorState("Invalid Password"))
-            return false
-        }
-        return true
-    }
-
-    private fun isValidEmail(): Boolean {
-        if (email.isNotEmpty() && email.contains("@")
-            && email.contains(".")
-        ) {
-            return true
-        }
-        _signInState.set(State.ErrorState("Invalid Email"))
-        return false
     }
 }

@@ -12,22 +12,21 @@ class SignUpRepoImpl(
 
     private val TAG = SignUpRepoImpl::class.java.simpleName
 
-    override suspend fun createAccountWithEmail(email: String, password: String): AuthResult? {
-        return try {
-            val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            sendEmailVerification(result.user)
-            result
-        } catch (e: Exception) {
-            Log.e(TAG, "createAccountWithEmail: $e")
-            return null
-        }
+    override suspend fun createAccountWithEmail(email: String, password: String): AuthResult {
+        return runCatching {
+            firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+        }.onSuccess {
+            sendEmailVerification(it.user)
+        }.onFailure {
+            Log.e(TAG, "createAccountWithEmail: ${it.message}", it)
+        }.getOrThrow()
     }
 
     private suspend fun sendEmailVerification(user: FirebaseUser?) {
-        try {
+        runCatching {
             user?.sendEmailVerification()?.await()
-        } catch (e: Exception) {
-            Log.e(TAG, "sendEmailVerification: $e")
+        }.onFailure {
+            Log.e(TAG, "sendEmailVerification: ${it.message}", it)
         }
     }
 }

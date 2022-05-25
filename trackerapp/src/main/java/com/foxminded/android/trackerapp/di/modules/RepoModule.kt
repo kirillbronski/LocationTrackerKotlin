@@ -1,5 +1,9 @@
 package com.foxminded.android.trackerapp.di.modules
 
+import com.foxminded.android.locationtrackerkotlin.accountinfo.AccountInfoRepoImpl
+import com.foxminded.android.locationtrackerkotlin.accountinfo.IAccountInfoRepo
+import com.foxminded.android.locationtrackerkotlin.forgotpassword.ForgotPasswordRepoImpl
+import com.foxminded.android.locationtrackerkotlin.forgotpassword.IForgotPasswordRepo
 import com.foxminded.android.locationtrackerkotlin.phoneauth.IPhoneAuthRepo
 import com.foxminded.android.locationtrackerkotlin.phoneauth.PhoneAuthRepoImpl
 import com.foxminded.android.locationtrackerkotlin.signin.ISignInRepo
@@ -53,4 +57,15 @@ class RepoModule {
         return MapsRepoImpl(accountDao)
     }
 
+    @Provides
+    @Singleton
+    fun phoneAccountInfoRepo(firebaseAuth: FirebaseAuth): IAccountInfoRepo {
+        return AccountInfoRepoImpl(firebaseAuth)
+    }
+
+    @Provides
+    @Singleton
+    fun phoneForgotPasswordRepo(firebaseAuth: FirebaseAuth): IForgotPasswordRepo {
+        return ForgotPasswordRepoImpl(firebaseAuth)
+    }
 }

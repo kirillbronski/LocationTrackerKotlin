@@ -3,6 +3,10 @@ package com.foxminded.android.trackerviewer.di.modules
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
+import com.foxminded.android.locationtrackerkotlin.accountinfo.AccountInfoViewModel
+import com.foxminded.android.locationtrackerkotlin.accountinfo.IAccountInfoRepo
+import com.foxminded.android.locationtrackerkotlin.forgotpassword.ForgotPasswordViewModel
+import com.foxminded.android.locationtrackerkotlin.forgotpassword.IForgotPasswordRepo
 import com.foxminded.android.locationtrackerkotlin.phoneauth.IPhoneAuthRepo
 import com.foxminded.android.locationtrackerkotlin.phoneauth.PhoneAuthViewModel
 import com.foxminded.android.locationtrackerkotlin.signin.ISignInRepo
@@ -81,4 +85,35 @@ class ViewModelModule {
         return ViewModelProvider(ViewModelStore(), viewModelFactory)[PhoneAuthViewModel::class.java]
     }
 
+    @IntoMap
+    @ViewModelKey(AccountInfoViewModel::class)
+    @Provides
+    fun provideAccountInfoViewModel(accountInfoRepoImpl: IAccountInfoRepo): ViewModel {
+        return AccountInfoViewModel(accountInfoRepoImpl)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInitAccountInfoViewModel(
+        viewModelFactory: ViewModelFactory,
+    ): AccountInfoViewModel {
+        return ViewModelProvider(ViewModelStore(),
+            viewModelFactory)[AccountInfoViewModel::class.java]
+    }
+
+    @IntoMap
+    @ViewModelKey(ForgotPasswordViewModel::class)
+    @Provides
+    fun provideForgotPasswordViewModel(forgotPasswordRepoImpl: IForgotPasswordRepo): ViewModel {
+        return ForgotPasswordViewModel(forgotPasswordRepoImpl)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInitForgotPasswordViewModel(
+        viewModelFactory: ViewModelFactory,
+    ): ForgotPasswordViewModel {
+        return ViewModelProvider(ViewModelStore(),
+            viewModelFactory)[ForgotPasswordViewModel::class.java]
+    }
 }

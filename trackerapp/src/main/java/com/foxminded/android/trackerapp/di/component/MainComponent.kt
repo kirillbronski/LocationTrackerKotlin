@@ -1,8 +1,10 @@
 package com.foxminded.android.trackerapp.di.component
 
+import com.foxminded.android.trackerapp.accountinfo.AccountInfoFragment
 import com.foxminded.android.trackerapp.di.modules.MainModule
 import com.foxminded.android.trackerapp.di.modules.RepoModule
 import com.foxminded.android.trackerapp.di.modules.ViewModelModule
+import com.foxminded.android.trackerapp.forgotpassword.ForgotPasswordFragment
 import com.foxminded.android.trackerapp.maps.MapsFragment
 import com.foxminded.android.trackerapp.phoneauth.PhoneAuthFragment
 import com.foxminded.android.trackerapp.signin.SignInFragment
@@ -22,6 +24,10 @@ interface MainComponent {
     fun injectSignInFragment(view: SignInFragment)
 
     fun injectSignUpFragment(view: SignUpFragment)
+
+    fun injectAccountInfoFragment(view: AccountInfoFragment)
+
+    fun injectForgotPasswordFragment(view: ForgotPasswordFragment)
 
     fun injectSendData(view: SendData)
 }

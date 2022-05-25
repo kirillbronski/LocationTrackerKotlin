@@ -15,22 +15,17 @@ class MapsRepoImpl(
 
     private val TAG = MapsRepoImpl::class.java.simpleName
 
-    override suspend fun getDataFromFirestore(): List<User> {
-        val users = mutableListOf<User>()
+    override suspend fun getDataFromFirestore(): List<User>? {
         return try {
-            firebaseFirestore
+            val users = firebaseFirestore
                 .collection(COLLECTION_NAME)
                 .get()
                 .await()
                 .toObjects(User::class.java)
-                .forEach {
-                    users.add(it)
-                }
             users
         } catch (e: Exception) {
-            users.clear()
             Log.e(TAG, "getDataFromFirestore: $e")
-            users
+            null
         }
 
 

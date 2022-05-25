@@ -1,15 +1,15 @@
 package com.foxminded.android.trackerapp
 
 import android.os.Bundle
-import com.foxminded.android.locationtrackerkotlin.MainActivityCommon
+import com.foxminded.android.locationtrackerkotlin.CommonActivity
 import com.foxminded.android.trackerapp.signin.SignInFragment
 
-class MainActivity : MainActivityCommon() {
+class MainActivity : CommonActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         if (savedInstanceState == null) {
-            displayFragment(SignInFragment.newInstance())
+            displayFirstFragmentWithoutBackStack(SignInFragment.newInstance())
         }
     }
 }

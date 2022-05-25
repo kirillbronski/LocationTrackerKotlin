@@ -12,30 +12,11 @@ class SignInRepoImpl(
     private val TAG = SignInRepoImpl::class.java.simpleName
 
     override suspend fun signIn(email: String, password: String): AuthResult? {
-        return try {
+        return runCatching {
             firebaseAuth.signInWithEmailAndPassword(email, password).await()
-        } catch (e: Exception) {
-            Log.e(TAG, "signIn: $e")
-            return null
-        }
-    }
-
-    override suspend fun sendPasswordReset(email: String): Boolean {
-        return try {
-            firebaseAuth.sendPasswordResetEmail(email).await()
-            true
-        } catch (e: Exception) {
-            Log.e(TAG, "sendPasswordReset: $e")
-            false
-        }
-    }
-
-    override suspend fun signOut(): Boolean {
-        firebaseAuth.signOut()
-        if (firebaseAuth.currentUser == null) {
-            return true
-        }
-        return false
+        }.onFailure {
+            Log.e(TAG, "signIn: ${it.message}", it)
+        }.getOrNull()
     }
 
     override suspend fun currentFirebaseUser(): String? {
@@ -47,7 +28,7 @@ class SignInRepoImpl(
             }
             return "No User!"
         } else {
-            return null
+            return firebaseAuth.currentUser
         }
     }
 }

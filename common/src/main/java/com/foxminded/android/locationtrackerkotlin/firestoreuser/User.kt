@@ -6,9 +6,9 @@ data class User(
     var longitude: Double,
     var dateAndTime: String?,
 ) {
-
-    constructor() : this(null,
-        -1.0,
-        -1.0,
-        null)
+    constructor() : this(
+        accountInfo = null,
+        latitude = -1.0,
+        longitude = -1.0,
+        dateAndTime = null)
 }

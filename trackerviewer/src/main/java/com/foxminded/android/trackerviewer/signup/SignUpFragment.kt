@@ -9,15 +9,19 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
-import com.foxminded.android.locationtrackerkotlin.signup.SignUpCommonFragment
+import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.signup.SignUpViewModel
-import com.foxminded.android.locationtrackerkotlin.state.State
+import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.state.SignUpButtonState
+import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
+import com.foxminded.android.trackerviewer.accountinfo.AccountInfoFragment
 import com.foxminded.android.trackerviewer.databinding.FragmentSignUpBinding
 import com.foxminded.android.trackerviewer.di.config.App
-import com.foxminded.android.trackerviewer.signin.SignInFragment
 import javax.inject.Inject
 
-class SignUpFragment : SignUpCommonFragment() {
+private const val SIGN_UP = 1
+
+class SignUpFragment : BaseCommonFragment() {
 
     private val TAG = SignUpFragment::class.java.simpleName
     private lateinit var binding: FragmentSignUpBinding
@@ -30,6 +34,10 @@ class SignUpFragment : SignUpCommonFragment() {
     @Inject
     lateinit var viewModel: SignUpViewModel
 
+    companion object {
+        fun newInstance() = SignUpFragment()
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (activity?.application as App).mainComponent.injectSignUpFragment(this)
@@ -40,7 +48,7 @@ class SignUpFragment : SignUpCommonFragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentSignUpBinding.inflate(inflater, container, false)
-        initViewsForCommonFragment()
+        initBindingViews()
         return binding.root
     }
 
@@ -51,30 +59,53 @@ class SignUpFragment : SignUpCommonFragment() {
             createAccount()
         }
         checkTextFields()
-        checkState()
+        checkViewState()
+        checkButtonState()
     }
 
     private fun createAccount() {
         viewModel.createAccount()
     }
 
-    private fun checkState() {
+    private fun checkViewState() {
         lifecycleScope.launchWhenStarted {
-            viewModel.signUpState.collect {
+            viewModel.viewState.collect {
                 when (it) {
-                    is State.SucceededState -> {
+                    is BaseViewState.SuccessState -> {
+                        when (it.state) {
+                            SIGN_UP -> {
+                                showToastMessage(it.stringValue)
+                                displayAccountInfo()
+                            }
+                        }
                         hideProgressIndicator(progressBar)
-                        displayAccountInfo()
                     }
-                    is State.ProgressIndicatorState -> {
+                    is BaseViewState.LoadingState -> {
                         showProgressIndicator(progressBar)
                     }
-                    is State.ErrorState -> {
+                    is BaseViewState.ErrorState -> {
                         showToastMessage(it.message)
                         hideProgressIndicator(progressBar)
                     }
-                    is State.PasswordResetState -> {
-                        hideProgressIndicator(progressBar)
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun checkButtonState() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.buttonState.collect {
+                when (it) {
+                    is SignUpButtonState.IsButtonSignUpEnablerState -> {
+                        when (it.enabler) {
+                            true -> {
+                                signUpButton.isEnabled = true
+                            }
+                            false -> {
+                                signUpButton.isEnabled = false
+                            }
+                        }
                     }
                     else -> {}
                 }
@@ -85,25 +116,25 @@ class SignUpFragment : SignUpCommonFragment() {
     private fun checkTextFields() {
 
         lifecycleScope.launchWhenStarted {
-            textFieldEmailListener(emailEditText).collect {
-                viewModel.requestEmailFromUser(it)
+            textFieldListener(emailEditText).collect {
+                viewModel.checkAllFieldsValue(email1 = it, password1 = null, passwordAgain1 = null)
             }
         }
 
         lifecycleScope.launchWhenStarted {
-            textFieldPasswordListener(passwordEditText).collect {
-                viewModel.requestPasswordFromUser(it)
+            textFieldListener(passwordEditText).collect {
+                viewModel.checkAllFieldsValue(email1 = null, password1 = it, passwordAgain1 = null)
             }
         }
 
         lifecycleScope.launchWhenStarted {
-            textFieldPasswordAgainListener(passwordAgainEditText, signUpButton).collect {
-                viewModel.requestPasswordAgainFromUser(it)
+            textFieldListener(passwordAgainEditText).collect {
+                viewModel.checkAllFieldsValue(email1 = null, password1 = null, passwordAgain1 = it)
             }
         }
     }
 
-    private fun initViewsForCommonFragment() {
+    private fun initBindingViews() {
         progressBar = binding.signUpCommon.progressBarId.commonPb
         emailEditText = binding.signUpCommon.emailEditText
         passwordEditText = binding.signUpCommon.passwordEditText
@@ -112,10 +143,6 @@ class SignUpFragment : SignUpCommonFragment() {
     }
 
     private fun displayAccountInfo() {
-        displayFragment(SignInFragment.newInstance())
-    }
-
-    companion object {
-        fun newInstance() = SignUpFragment()
+        displayFragment(AccountInfoFragment.newInstance(null))
     }
 }

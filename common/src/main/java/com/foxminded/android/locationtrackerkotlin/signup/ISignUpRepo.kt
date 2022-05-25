@@ -4,6 +4,6 @@ import com.google.firebase.auth.AuthResult
 
 interface ISignUpRepo {
 
-    suspend fun createAccountWithEmail(email: String, password: String): AuthResult?
+    suspend fun createAccountWithEmail(email: String, password: String): AuthResult
 
 }

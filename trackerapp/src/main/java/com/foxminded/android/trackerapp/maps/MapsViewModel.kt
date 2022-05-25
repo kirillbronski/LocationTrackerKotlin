@@ -11,9 +11,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
-import com.foxminded.android.locationtrackerkotlin.extensions.set
 import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
-import com.foxminded.android.locationtrackerkotlin.state.State
+import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.state.MapsState
 import com.foxminded.android.trackerapp.utils.DataConvert
 import com.foxminded.android.trackerapp.utils.IConfigApp
 import kotlinx.coroutines.Dispatchers
@@ -33,27 +33,41 @@ class MapsViewModel(
 ) : ViewModel() {
 
     private val TAG = MapsViewModel::class.java.simpleName
-    private val _mapsState = MutableStateFlow<State>(State.DefaultState)
-    val mapsState: StateFlow<State> = _mapsState.asStateFlow()
+    private val _mapsState = MutableStateFlow<BaseViewState>(BaseViewState.DefaultState)
+    val mapsState: StateFlow<BaseViewState> = _mapsState.asStateFlow()
+    private val _mapsLocationState = MutableStateFlow<MapsState>(MapsState.DefaultState)
+    val mapsLocationState: StateFlow<MapsState> = _mapsLocationState.asStateFlow()
 
-    private lateinit var accountInfo: String
+    private lateinit var accountInfoFromServer: String
+    private var accountInfoFromBundle: String? = null
+
+    fun getValueFromBundle(accountInfoFromBundle: String?): String? {
+        return accountInfoFromBundle.also { this.accountInfoFromBundle = it }
+    }
+
 
     init {
-        Log.d(TAG, "init RUN: ")
         viewModelScope.launch {
-            accountInfo = mapsRepoFirestoreImpl.currentFirebaseUser().toString()
+            accountInfoFromServer = mapsRepoFirestoreImpl.currentFirebaseUser().toString()
         }
-        Log.d(TAG, "init RUN: $accountInfo")
         startWorkManagerTask()
     }
 
     private val locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
             if (isOnline()) {
-                insertDataToFirestoreSilently(location)
+                if (accountInfoFromBundle != null) {
+                    insertDataToFirestoreSilently(location, accountInfoFromBundle)
+                } else {
+                    insertDataToFirestoreSilently(location, accountInfoFromServer)
+                }
                 Log.d(TAG, "onLocationChanged: ONLINE")
             } else {
-                insertDataToRoomTableSilently(location)
+                if (accountInfoFromBundle != null) {
+                    insertDataToRoomTableSilently(location, accountInfoFromBundle)
+                } else {
+                    insertDataToRoomTableSilently(location, accountInfoFromServer)
+                }
                 Log.d(TAG, "onLocationChanged: OFFLINE")
             }
         }
@@ -92,9 +106,9 @@ class MapsViewModel(
         return false
     }
 
-    fun insertDataToFirestoreSilently(location: Location) {
+    fun insertDataToFirestoreSilently(location: Location, account: String?) {
 
-        val user = User(accountInfo,
+        val user = User(account,
             location.latitude,
             location.longitude,
             DataConvert.dateToStringFormat(location.time))
@@ -104,21 +118,23 @@ class MapsViewModel(
                 mapsRepoFirestoreImpl.insertDataToFirestore(user)
             } catch (e: Exception) {
                 Log.d(TAG, "insertDataToFirestoreSilently() returned: ${e.message}")
-                _mapsState.set(State.ErrorState(e.message.toString()))
+                _mapsState.value = BaseViewState.ErrorState(e.message.toString())
             }
         }
     }
 
-    fun insertDataToRoomTableSilently(location: Location) {
+    fun insertDataToRoomTableSilently(location: Location, account: String?) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                mapsRepoImpl.insertInTable(accountInfo,
-                    location.latitude,
-                    location.longitude,
-                    DataConvert.dateToStringFormat(location.time))
+                if (account != null) {
+                    mapsRepoImpl.insertInTable(account,
+                        location.latitude,
+                        location.longitude,
+                        DataConvert.dateToStringFormat(location.time))
+                }
             } catch (e: Exception) {
                 Log.d(TAG, "insertDataToRoomTableSilently() returned: ${e.message}")
-                _mapsState.set(State.ErrorState(e.message.toString()))
+                _mapsState.value = BaseViewState.ErrorState(e.message.toString())
             }
         }
     }
@@ -130,24 +146,24 @@ class MapsViewModel(
                 Log.d(TAG, "deleteAllDataFromTable: $result")
             } catch (e: Exception) {
                 Log.d(TAG, "deleteAllDataFromTable() returned: ${e.message}")
-                _mapsState.set(State.ErrorState(e.message.toString()))
+                _mapsState.value = BaseViewState.ErrorState(e.message.toString())
             }
         }
     }
 
     fun stopUpdateGps() {
         locationManager.removeUpdates(locationListener)
-        _mapsState.set(State.StateLocationListener("Location listener was stopped"))
+        _mapsLocationState.value = MapsState.StateLocationListener("Location listener was stopped")
     }
 
     fun signOut() {
         viewModelScope.launch {
             try {
                 mapsRepoFirestoreImpl.signOut()
-                _mapsState.set(State.SignOut)
+                _mapsState.value = BaseViewState.DefaultState
             } catch (e: Exception) {
                 Log.d(TAG, "signOut() returned: ${e.message}")
-                _mapsState.set(State.ErrorState(e.message.toString()))
+                _mapsState.value = BaseViewState.ErrorState(e.message.toString())
             }
         }
     }

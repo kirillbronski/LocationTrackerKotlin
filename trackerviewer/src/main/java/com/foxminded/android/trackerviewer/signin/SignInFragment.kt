@@ -2,46 +2,55 @@ package com.foxminded.android.trackerviewer.signin
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.Group
 import androidx.lifecycle.lifecycleScope
-import com.foxminded.android.locationtrackerkotlin.signin.SignInCommonFragment
+import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.signin.SignInViewModel
-import com.foxminded.android.locationtrackerkotlin.state.State
+import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.state.SignInButtonState
+import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
+import com.foxminded.android.trackerviewer.accountinfo.AccountInfoFragment
 import com.foxminded.android.trackerviewer.databinding.FragmentSignInBinding
 import com.foxminded.android.trackerviewer.di.config.App
-import com.foxminded.android.trackerviewer.maps.MapsFragment
+import com.foxminded.android.trackerviewer.forgotpassword.ForgotPasswordFragment
 import com.foxminded.android.trackerviewer.phoneauth.PhoneAuthFragment
 import com.foxminded.android.trackerviewer.signup.SignUpFragment
 import javax.inject.Inject
 
-class SignInFragment : SignInCommonFragment() {
+private const val SIGN_IN = 1
+private const val ACCOUNT = 2
+private const val DEFAULT = 0
+
+class SignInFragment : BaseCommonFragment() {
 
     private val TAG = SignInFragment::class.java.simpleName
     private lateinit var binding: FragmentSignInBinding
     private lateinit var progressBar: ConstraintLayout
-    private lateinit var emailResetPasswordEditText: EditText
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
-    private lateinit var yourAccountTextView: TextView
     private lateinit var signInButton: Button
-    private lateinit var resetPassword: Button
-    private lateinit var forgotPasswordGroup: Group
-    private lateinit var signInGroup: Group
-    private lateinit var showAccountInfoGroup: Group
 
     @Inject
     lateinit var viewModel: SignInViewModel
 
+    companion object {
+        fun newInstance() = SignInFragment()
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (activity?.application as App).mainComponent.injectSignInFragment(this)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.requestAccountInfo()
     }
 
     override fun onCreateView(
@@ -49,60 +58,72 @@ class SignInFragment : SignInCommonFragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentSignInBinding.inflate(inflater, container, false)
-        initViewsForCommonFragment()
+        initBindingViews()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-
         binding.loginFragmentCommon.signInButton.setOnClickListener { viewModel.signIn() }
-        binding.loginFragmentCommon.resetPasswordButton.setOnClickListener { viewModel.passwordReset() }
         binding.loginFragmentCommon.phoneButton.setOnClickListener { displayPhoneAuthFragment() }
-        binding.loginFragmentCommon.continueButton.setOnClickListener { displayMapsFragment() }
         binding.loginFragmentCommon.signUpTextView.setOnClickListener { displaySignUpFragment() }
-        binding.loginFragmentCommon.logoutButton.setOnClickListener { viewModel.signOut() }
         binding.loginFragmentCommon.forgotPasswordTextView.setOnClickListener {
-            forgotPassword(forgotPasswordGroup, signInGroup)
-        }
-        binding.loginFragmentCommon.backResetPasswordButton.setOnClickListener {
-            backButton(forgotPasswordGroup, signInGroup, emailResetPasswordEditText)
+            displayForgotPasswordFragment()
         }
         checkTextFields()
-        checkState()
+        checkViewState()
+        checkButtonState()
     }
 
-    private fun checkState() {
+    private fun checkViewState() {
         lifecycleScope.launchWhenStarted {
-            viewModel.signInState.collect {
+            viewModel.viewState.collect {
                 when (it) {
-                    is State.SucceededState -> {
+                    is BaseViewState.SuccessState -> {
+                        when (it.state) {
+                            SIGN_IN -> {
+                                showToastMessage(it.stringValue)
+                                displayAccountInfoFragment()
+                                it.state = DEFAULT
+                            }
+                            ACCOUNT -> {
+                                displayAccountInfoFragment()
+                                it.state = DEFAULT
+                            }
+                        }
                         hideProgressIndicator(progressBar)
-                        viewModel.requestAccountInfo()
                     }
-                    is State.ProgressIndicatorState -> {
+                    is BaseViewState.LoadingState -> {
                         showProgressIndicator(progressBar)
                     }
-                    is State.ErrorState -> {
+                    is BaseViewState.ErrorState -> {
                         showToastMessage(it.message)
                         hideProgressIndicator(progressBar)
                     }
-                    is State.DefaultState -> {
-                        signOutButton(signInGroup, showAccountInfoGroup)
+                    else -> {
+                        Log.d(TAG, "checkViewState: BRANCH ELSE")
                     }
-                    is State.AccountInfoState -> {
-                        continueOrSignOut(it.accountInfo,
-                            yourAccountTextView,
-                            showAccountInfoGroup,
-                            signInGroup)
+                }
+            }
+        }
+    }
+
+    private fun checkButtonState() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.signInButtonState.collect {
+                when (it) {
+                    is SignInButtonState.IsButtonSignInEnablerState -> {
+                        when (it.enabler) {
+                            true -> {
+                                signInButton.isEnabled = true
+                            }
+                            false -> {
+                                signInButton.isEnabled = false
+                            }
+                        }
                     }
-                    is State.PasswordResetState -> {
-                        hideProgressIndicator(progressBar)
-                        returnSignInView(forgotPasswordGroup, signInGroup)
-                        showResetPasswordMessage(it.email)
-                    }
+                    else -> {}
                 }
             }
         }
@@ -111,56 +132,38 @@ class SignInFragment : SignInCommonFragment() {
     private fun checkTextFields() {
 
         lifecycleScope.launchWhenStarted {
-            textFieldEmailListener(emailEditText).collect {
-                viewModel.requestEmailFromUser(it)
+            textFieldListener(emailEditText).collect {
+                viewModel.checkEmailAndPasswordFieldsValue(email1 = it, password1 = null)
             }
         }
 
         lifecycleScope.launchWhenStarted {
-            textFieldPasswordListener(passwordEditText, signInButton).collect {
-                viewModel.requestPasswordFromUser(it)
-            }
-        }
-
-        lifecycleScope.launchWhenStarted {
-            textFieldResetPasswordListener(emailResetPasswordEditText, resetPassword).collect {
-                viewModel.requestPasswordFromUser(it)
+            textFieldListener(passwordEditText).collect {
+                viewModel.checkEmailAndPasswordFieldsValue(email1 = null, password1 = it)
             }
         }
     }
 
-    private fun initViewsForCommonFragment() {
+    private fun initBindingViews() {
         progressBar = binding.loginFragmentCommon.progressBarId.commonPb
-        emailResetPasswordEditText = binding.loginFragmentCommon.emailResetPasswordEditText
         emailEditText = binding.loginFragmentCommon.emailEditText
         passwordEditText = binding.loginFragmentCommon.passwordEditText
-        yourAccountTextView = binding.loginFragmentCommon.yourAccountTextView
         signInButton = binding.loginFragmentCommon.signInButton
-        resetPassword = binding.loginFragmentCommon.resetPasswordButton
-        forgotPasswordGroup = binding.loginFragmentCommon.forgotPasswordGroup
-        signInGroup = binding.loginFragmentCommon.signInGroup
-        showAccountInfoGroup = binding.loginFragmentCommon.showAccountInfoGroup
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.requestAccountInfo()
-    }
-
-    private fun displayMapsFragment() {
-        displayFragment(MapsFragment.newInstance())
     }
 
     private fun displayPhoneAuthFragment() {
         displayFragment(PhoneAuthFragment.newInstance())
     }
 
+    private fun displayForgotPasswordFragment() {
+        displayFragment(ForgotPasswordFragment.newInstance())
+    }
+
+    private fun displayAccountInfoFragment() {
+        displayFragment(AccountInfoFragment.newInstance(null))
+    }
+
     private fun displaySignUpFragment() {
         displayFragment(SignUpFragment.newInstance())
     }
-
-    companion object {
-        fun newInstance() = SignInFragment()
-    }
-
 }

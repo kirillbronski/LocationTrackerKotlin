@@ -16,7 +16,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.foxminded.android.locationtrackerkotlin.state.State
+import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.state.MapsState
 import com.foxminded.android.trackerapp.R
 import com.foxminded.android.trackerapp.databinding.FragmentMapsBinding
 import com.foxminded.android.trackerapp.di.config.App
@@ -26,7 +27,18 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import javax.inject.Inject
 
+private const val ACCOUNT_INFO = "ACCOUNT_INFO"
+
 class MapsFragment : Fragment() {
+
+    companion object {
+        fun newInstance(accountInfo: String?) =
+            MapsFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ACCOUNT_INFO, accountInfo)
+                }
+            }
+    }
 
     private val TAG = MapsFragment::class.java.simpleName
     private lateinit var binding: FragmentMapsBinding
@@ -34,37 +46,18 @@ class MapsFragment : Fragment() {
     @Inject
     lateinit var viewModel: MapsViewModel
 
+    private val enableGpsSettings =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ -> }
+
+    private val permissionsRequestLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions(),
+        ::onGotPermissionsResult
+    )
+
     private val callback = OnMapReadyCallback { map ->
-        settingsMap(map)
-        lifecycleScope.launchWhenStarted {
-            viewModel.mapsState.collect {
-                when (it) {
-                    is State.ErrorState -> {
-                        showToastMessage(it.message)
-                    }
-                    is State.StateLocationListener -> {
-                        showToastMessage(it.message)
-                    }
-                    is State.SignOut -> {
-                        SignInFragment.newInstance()
-                    }
-                    else -> {}
-                }
-
-            }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun settingsMap(map: GoogleMap) {
-        try {
-            map.isMyLocationEnabled = true
-        } catch (e: SecurityException) {
-            Log.e(TAG, "error: " + e.message.toString(), e)
-        }
-        map.isTrafficEnabled = true
-        map.uiSettings.isZoomControlsEnabled = true
-        map.uiSettings.setAllGesturesEnabled(true)
+        setUpMap(map)
+        checkViewState()
+        checkMapState()
     }
 
     override fun onAttach(context: Context) {
@@ -79,6 +72,7 @@ class MapsFragment : Fragment() {
     ): View {
         setHasOptionsMenu(true)
         binding = FragmentMapsBinding.inflate(inflater, container, false)
+        viewModel.getValueFromBundle(arguments?.get(ACCOUNT_INFO) as String?)
         return binding.root
     }
 
@@ -89,6 +83,53 @@ class MapsFragment : Fragment() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
         viewModel.requestLocation()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume")
+        isMapsEnabled()
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun setUpMap(map: GoogleMap) {
+        try {
+            map.isMyLocationEnabled = true
+        } catch (e: SecurityException) {
+            Log.e(TAG, "error: " + e.message.toString(), e)
+        }
+        map.isTrafficEnabled = true
+        map.uiSettings.isZoomControlsEnabled = true
+        map.uiSettings.setAllGesturesEnabled(true)
+    }
+
+    private fun checkViewState() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.mapsState.collect {
+                when (it) {
+                    is BaseViewState.DefaultState -> {
+                        SignInFragment.newInstance()
+                    }
+                    is BaseViewState.ErrorState -> {
+                        showToastMessage(it.message)
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun checkMapState() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.mapsLocationState.collect {
+                when (it) {
+                    is MapsState.StateLocationListener -> {
+                        showToastMessage(it.message)
+                    }
+                    else -> {}
+                }
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -127,17 +168,6 @@ class MapsFragment : Fragment() {
         Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
     }
 
-    companion object {
-        fun newInstance(): MapsFragment {
-            return MapsFragment()
-        }
-    }
-
-    private val permissionsRequestLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions(),
-        ::onGotPermissionsResult
-    )
-
     private fun onGotPermissionsResult(grantResults: Map<String, Boolean>) {
         if (grantResults.entries.all { it.value }) {
             Toast.makeText(
@@ -172,24 +202,18 @@ class MapsFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        Log.d(TAG, "onResume")
-        isMapsEnabled()
-    }
-
     private fun isMapsEnabled(): Boolean {
         val locationManager: LocationManager =
             context?.getSystemService(Context.LOCATION_SERVICE) as (LocationManager)
         return if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            buildAlertMessageNoGps()
+            showAlertMessageNoGps()
             false
         } else {
             true
         }
     }
 
-    private fun buildAlertMessageNoGps() {
+    private fun showAlertMessageNoGps() =
         AlertDialog.Builder(requireContext())
             .setMessage(getString(R.string.requires_gps))
             .setCancelable(false)
@@ -200,8 +224,4 @@ class MapsFragment : Fragment() {
             }
             .create()
             .show()
-    }
-
-    private val enableGpsSettings =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ -> }
 }

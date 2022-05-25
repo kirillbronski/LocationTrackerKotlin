@@ -7,6 +7,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
+import com.foxminded.android.locationtrackerkotlin.accountinfo.AccountInfoViewModel
+import com.foxminded.android.locationtrackerkotlin.accountinfo.IAccountInfoRepo
+import com.foxminded.android.locationtrackerkotlin.forgotpassword.ForgotPasswordViewModel
+import com.foxminded.android.locationtrackerkotlin.forgotpassword.IForgotPasswordRepo
 import com.foxminded.android.locationtrackerkotlin.phoneauth.IPhoneAuthRepo
 import com.foxminded.android.locationtrackerkotlin.phoneauth.PhoneAuthViewModel
 import com.foxminded.android.locationtrackerkotlin.signin.ISignInRepo
@@ -30,7 +34,7 @@ class ViewModelModule {
     @IntoMap
     @ViewModelKey(MapsViewModel::class)
     @Provides
-    fun providesMapsViewModel(
+    fun provideMapsViewModel(
         mapsRepoImpl: IMapsRepo,
         mapsRepoFirestoreImpl: IMapsRepoFirestore,
         locationManager: LocationManager,
@@ -59,7 +63,7 @@ class ViewModelModule {
     @IntoMap
     @ViewModelKey(SignInViewModel::class)
     @Provides
-    fun providesSignInViewModel(signInRepo: ISignInRepo): ViewModel {
+    fun provideSignInViewModel(signInRepo: ISignInRepo): ViewModel {
         return SignInViewModel(signInRepo)
     }
 
@@ -74,7 +78,7 @@ class ViewModelModule {
     @IntoMap
     @ViewModelKey(SignUpViewModel::class)
     @Provides
-    fun providesSignUpViewModel(signUpRepo: ISignUpRepo): ViewModel {
+    fun provideSignUpViewModel(signUpRepo: ISignUpRepo): ViewModel {
         return SignUpViewModel(signUpRepo)
     }
 
@@ -89,7 +93,7 @@ class ViewModelModule {
     @IntoMap
     @ViewModelKey(PhoneAuthViewModel::class)
     @Provides
-    fun providesPhoneAuthViewModel(phoneAuthRepo: IPhoneAuthRepo): ViewModel {
+    fun providePhoneAuthViewModel(phoneAuthRepo: IPhoneAuthRepo): ViewModel {
         return PhoneAuthViewModel(phoneAuthRepo)
     }
 
@@ -101,4 +105,35 @@ class ViewModelModule {
         return ViewModelProvider(ViewModelStore(), viewModelFactory)[PhoneAuthViewModel::class.java]
     }
 
+    @IntoMap
+    @ViewModelKey(AccountInfoViewModel::class)
+    @Provides
+    fun provideAccountInfoViewModel(accountInfoRepoImpl: IAccountInfoRepo): ViewModel {
+        return AccountInfoViewModel(accountInfoRepoImpl)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInitAccountInfoViewModel(
+        viewModelFactory: ViewModelFactory,
+    ): AccountInfoViewModel {
+        return ViewModelProvider(ViewModelStore(),
+            viewModelFactory)[AccountInfoViewModel::class.java]
+    }
+
+    @IntoMap
+    @ViewModelKey(ForgotPasswordViewModel::class)
+    @Provides
+    fun provideForgotPasswordViewModel(forgotPasswordRepoImpl: IForgotPasswordRepo): ViewModel {
+        return ForgotPasswordViewModel(forgotPasswordRepoImpl)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInitForgotPasswordViewModel(
+        viewModelFactory: ViewModelFactory,
+    ): ForgotPasswordViewModel {
+        return ViewModelProvider(ViewModelStore(),
+            viewModelFactory)[ForgotPasswordViewModel::class.java]
+    }
 }

@@ -12,6 +12,8 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
+private const val TIMEOUT = 60L
+
 class PhoneAuthRepoImpl(
     private var firebaseAuth: FirebaseAuth,
 ) : IPhoneAuthRepo {
@@ -27,7 +29,7 @@ class PhoneAuthRepoImpl(
         suspendCoroutine {
             PhoneAuthProvider.verifyPhoneNumber(PhoneAuthOptions.newBuilder(firebaseAuth)
                 .setPhoneNumber(phoneNumber)
-                .setTimeout(60L, TimeUnit.SECONDS)
+                .setTimeout(TIMEOUT, TimeUnit.SECONDS)
                 .setActivity(activity)
                 .setCallbacks(object :
                     PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -56,12 +58,14 @@ class PhoneAuthRepoImpl(
 
 
     override suspend fun verifyPhoneNumberWithCode(code: String): PhoneAuthCredential? {
-        return try {
-            val credential = PhoneAuthProvider.getCredential(mVerificationId, code)
-            credential
-        } catch (e: Exception) {
-            return null
-        }
+
+        return runCatching {
+            firebaseAuth.currentUser
+            Log.d(TAG, "verifyPhoneNumberWithCode: ${firebaseAuth.currentUser?.phoneNumber}")
+            PhoneAuthProvider.getCredential(mVerificationId, code)
+        }.onFailure {
+            Log.d(TAG, "verifyPhoneNumberWithCode() returned: ${it.message}", it)
+        }.getOrNull()
     }
 
     override suspend fun resendVerificationCode(
@@ -71,7 +75,7 @@ class PhoneAuthRepoImpl(
         suspendCoroutine {
             PhoneAuthProvider.verifyPhoneNumber(PhoneAuthOptions.newBuilder(firebaseAuth)
                 .setPhoneNumber(phoneNumber)
-                .setTimeout(60L, TimeUnit.SECONDS)
+                .setTimeout(TIMEOUT, TimeUnit.SECONDS)
                 .setActivity(activity)
                 .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                     override fun onVerificationCompleted(phoneAuthCredential: PhoneAuthCredential) {
@@ -101,12 +105,12 @@ class PhoneAuthRepoImpl(
         }
 
     override suspend fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential): AuthResult? {
-        return try {
+        return runCatching {
+            Log.d(TAG, "signInWithPhoneAuthCredential: ${firebaseAuth.currentUser?.phoneNumber}")
             firebaseAuth.signInWithCredential(credential).await()
-        } catch (e: Exception) {
-            Log.e(TAG, "signInWithPhoneAuthCredential: $e", e)
-            return null
-        }
+        }.onFailure {
+            Log.e(TAG, "signInWithPhoneAuthCredential: ${it.message}", it)
+        }.getOrNull()
     }
 
 }

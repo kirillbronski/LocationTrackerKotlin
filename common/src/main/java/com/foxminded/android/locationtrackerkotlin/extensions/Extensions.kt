@@ -1,18 +1,26 @@
 package com.foxminded.android.locationtrackerkotlin.extensions
 
+import android.widget.EditText
+import androidx.core.widget.addTextChangedListener
 import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 
-fun User.buildMarkers(
-    latitude: Double, longitude: Double,
-    accountInfo: String?, dateAndTime: String?,
-): MarkerOptions {
+fun buildMarker(user: User): MarkerOptions {
     return MarkerOptions()
-        .position(LatLng(latitude, longitude))
-        .title(accountInfo)
-        .snippet(dateAndTime)
+        .position(LatLng(user.latitude, user.longitude))
+        .title(user.accountInfo)
+        .snippet(user.dateAndTime)
 }
 
-fun <T> MutableStateFlow<T>.set(newValue: T) = apply { value = newValue }
+fun textFieldListener(editText: EditText): Flow<String> {
+    return callbackFlow {
+        editText.addTextChangedListener {
+            trySend(it.toString())
+        }
+        awaitClose()
+    }
+}
