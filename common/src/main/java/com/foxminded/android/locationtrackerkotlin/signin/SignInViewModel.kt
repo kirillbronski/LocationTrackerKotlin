@@ -2,16 +2,16 @@ package com.foxminded.android.locationtrackerkotlin.signin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.foxminded.android.locationtrackerkotlin.extensions.isValidEmail
+import com.foxminded.android.locationtrackerkotlin.extensions.isValidPassword
 import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
-import com.foxminded.android.locationtrackerkotlin.state.SignInButtonState
+import com.foxminded.android.locationtrackerkotlin.utils.StateConst.ACCOUNT
+import com.foxminded.android.locationtrackerkotlin.utils.StateConst.SIGN_IN
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-private const val SIGN_IN = 1
-private const val ACCOUNT = 2
 
 class SignInViewModel(
     private var signInRepo: ISignInRepo,
@@ -22,9 +22,8 @@ class SignInViewModel(
     private val _viewState = MutableStateFlow<BaseViewState>(BaseViewState.DefaultState)
     val viewState: StateFlow<BaseViewState> = _viewState.asStateFlow()
 
-    private val _signInButtonState =
-        MutableStateFlow<SignInButtonState>(SignInButtonState.DefaultState)
-    val signInButtonState: StateFlow<SignInButtonState> = _signInButtonState.asStateFlow()
+    private val _signInButtonState = MutableStateFlow(false)
+    val signInButtonState: StateFlow<Boolean> = _signInButtonState.asStateFlow()
 
     private var email = MutableStateFlow("")
     private var password = MutableStateFlow("")
@@ -44,22 +43,17 @@ class SignInViewModel(
             }
         }
 
-        if (email.value.contains("@") && email.value.contains(".")
-            && password.value.length >= 6
-        ) {
-            _signInButtonState.value = SignInButtonState.IsButtonSignInEnablerState(true)
-        } else {
-            _signInButtonState.value = SignInButtonState.IsButtonSignInEnablerState(false)
-        }
+        _signInButtonState.value = (email.value.isValidEmail()
+                && password.value.isValidPassword())
     }
 
     fun signIn() {
         _viewState.value = BaseViewState.LoadingState
         viewModelScope.launch(Dispatchers.IO) {
-            if (signInRepo.signIn(email.value, password.value) != null) {
-                _viewState.value = BaseViewState.SuccessState(SIGN_IN, "Sign in Success!")
+            _viewState.value = if (signInRepo.signIn(email.value, password.value) != null) {
+                BaseViewState.SuccessState(SIGN_IN.state, "Sign in Success!")
             } else {
-                _viewState.value = BaseViewState.ErrorState("Failed! Details in logs")
+                BaseViewState.ErrorState("Failed! Details in logs")
             }
         }
     }
@@ -67,11 +61,10 @@ class SignInViewModel(
     fun requestAccountInfo() {
         viewModelScope.launch(Dispatchers.IO) {
             val userInfo = signInRepo.currentFirebaseUser()
-            if (userInfo != null) {
-                _viewState.value =
-                    BaseViewState.SuccessState(state = ACCOUNT, stringValue = userInfo)
+            _viewState.value = if (userInfo != null) {
+                BaseViewState.SuccessState(state = ACCOUNT.state, stringValue = userInfo)
             } else {
-                _viewState.value = BaseViewState.ErrorState("Please sign in or sign up")
+                BaseViewState.ErrorState("Please sign in or sign up")
             }
         }
     }

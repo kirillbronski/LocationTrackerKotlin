@@ -13,6 +13,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
 import com.foxminded.android.locationtrackerkotlin.accountinfo.AccountInfoViewModel
 import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.utils.StateConst.*
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
 import com.foxminded.android.trackerviewer.databinding.FragmentAccountInfoBinding
 import com.foxminded.android.trackerviewer.di.config.App
@@ -20,9 +21,6 @@ import com.foxminded.android.trackerviewer.maps.MapsFragment
 import com.foxminded.android.trackerviewer.signin.SignInFragment
 import javax.inject.Inject
 
-private const val ACCOUNT = 1
-private const val SIGN_OUT = 2
-private const val DEFAULT = 0
 private const val ACCOUNT_INFO = "ACCOUNT_INFO"
 
 class AccountInfoFragment : BaseCommonFragment() {
@@ -88,7 +86,7 @@ class AccountInfoFragment : BaseCommonFragment() {
                 when (it) {
                     is BaseViewState.SuccessState -> {
                         when (it.state) {
-                            ACCOUNT -> {
+                            ACCOUNT.state -> {
                                 if (accountInfo != null) {
                                     yourAccountTextView.text = "Your account: $accountInfo"
                                     continueButton.isEnabled = true
@@ -97,10 +95,10 @@ class AccountInfoFragment : BaseCommonFragment() {
                                     continueButton.isEnabled = true
                                 }
                             }
-                            SIGN_OUT -> {
+                            SIGN_OUT.state -> {
                                 displaySignInFragment()
                                 Log.d(TAG, "checkViewState: SIGN_OUT")
-                                it.state = DEFAULT
+                                it.state = DEFAULT.state
                             }
                         }
                     }

@@ -2,15 +2,15 @@ package com.foxminded.android.locationtrackerkotlin.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.foxminded.android.locationtrackerkotlin.extensions.isValidEmail
+import com.foxminded.android.locationtrackerkotlin.extensions.isValidPassword
 import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
-import com.foxminded.android.locationtrackerkotlin.state.SignUpButtonState
+import com.foxminded.android.locationtrackerkotlin.utils.StateConst.SIGN_UP
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-private const val SIGN_UP = 1
 
 class SignUpViewModel(
     private var signUpRepo: ISignUpRepo,
@@ -21,8 +21,8 @@ class SignUpViewModel(
     private val _viewState = MutableStateFlow<BaseViewState>(BaseViewState.DefaultState)
     val viewState: StateFlow<BaseViewState> = _viewState.asStateFlow()
 
-    private val _buttonState = MutableStateFlow<SignUpButtonState>(SignUpButtonState.DefaultState)
-    val buttonState: StateFlow<SignUpButtonState> = _buttonState.asStateFlow()
+    private val _buttonState = MutableStateFlow(false)
+    val buttonState: StateFlow<Boolean> = _buttonState.asStateFlow()
 
     private var email = MutableStateFlow("")
     private var password = MutableStateFlow("")
@@ -44,20 +44,15 @@ class SignUpViewModel(
                 this.passwordAgain.value = it
             }
         }
-        if (email.value.contains("@") && email.value.contains(".")
-            && password.value.length >= 6 && passwordAgain.value == password.value
-        ) {
-            _buttonState.value = SignUpButtonState.IsButtonSignUpEnablerState(true)
-        } else {
-            _buttonState.value = SignUpButtonState.IsButtonSignUpEnablerState(false)
-        }
+        _buttonState.value = (email.value.isValidEmail()
+                && password.value.isValidPassword() && passwordAgain.value == password.value)
     }
 
     fun createAccount() {
         _viewState.value = BaseViewState.LoadingState
         viewModelScope.launch(Dispatchers.IO) {
             signUpRepo.createAccountWithEmail(email.value, password.value)
-            _viewState.value = BaseViewState.SuccessState(SIGN_UP,
+            _viewState.value = BaseViewState.SuccessState(SIGN_UP.state,
                 "Complete! Verification link sent to ${email.value}")
         }
     }

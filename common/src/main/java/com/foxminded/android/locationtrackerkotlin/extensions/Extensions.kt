@@ -1,5 +1,7 @@
 package com.foxminded.android.locationtrackerkotlin.extensions
 
+import android.text.TextUtils
+import android.util.Patterns
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
 import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
@@ -24,3 +26,15 @@ fun textFieldListener(editText: EditText): Flow<String> {
         awaitClose()
     }
 }
+
+fun String.isValidEmail() =
+    !TextUtils.isEmpty(this) && Patterns.EMAIL_ADDRESS.matcher(this).matches()
+
+fun String.isValidPhone() =
+    !TextUtils.isEmpty(this) && Patterns.PHONE.matcher(this).matches() && this.length >= 12
+
+fun String.isValidSmsCode() =
+    !TextUtils.isEmpty(this) && this.length == 6
+
+fun String.isValidPassword() =
+    !TextUtils.isEmpty(this) && this.length >= 6

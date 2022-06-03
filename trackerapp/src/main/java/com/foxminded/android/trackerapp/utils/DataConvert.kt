@@ -7,7 +7,7 @@ import java.util.*
 object DataConvert {
     @SuppressLint("SimpleDateFormat")
     fun dateToStringFormat(date: Long): String {
-        val simpleDateFormat = SimpleDateFormat("yyyy-M-d")
+        val simpleDateFormat = SimpleDateFormat("yyyy-M-d HH:mm:ss")
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = date
         return simpleDateFormat.format(calendar.time)

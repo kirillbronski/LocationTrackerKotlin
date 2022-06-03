@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.signin.SignInViewModel
 import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
-import com.foxminded.android.locationtrackerkotlin.state.SignInButtonState
+import com.foxminded.android.locationtrackerkotlin.utils.StateConst.*
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
 import com.foxminded.android.trackerviewer.accountinfo.AccountInfoFragment
 import com.foxminded.android.trackerviewer.databinding.FragmentSignInBinding
@@ -22,10 +22,6 @@ import com.foxminded.android.trackerviewer.forgotpassword.ForgotPasswordFragment
 import com.foxminded.android.trackerviewer.phoneauth.PhoneAuthFragment
 import com.foxminded.android.trackerviewer.signup.SignUpFragment
 import javax.inject.Inject
-
-private const val SIGN_IN = 1
-private const val ACCOUNT = 2
-private const val DEFAULT = 0
 
 class SignInFragment : BaseCommonFragment() {
 
@@ -82,14 +78,14 @@ class SignInFragment : BaseCommonFragment() {
                 when (it) {
                     is BaseViewState.SuccessState -> {
                         when (it.state) {
-                            SIGN_IN -> {
+                            SIGN_IN.state -> {
                                 showToastMessage(it.stringValue)
                                 displayAccountInfoFragment()
-                                it.state = DEFAULT
+                                it.state = DEFAULT.state
                             }
-                            ACCOUNT -> {
+                            ACCOUNT.state -> {
                                 displayAccountInfoFragment()
-                                it.state = DEFAULT
+                                it.state = DEFAULT.state
                             }
                         }
                         hideProgressIndicator(progressBar)
@@ -113,17 +109,12 @@ class SignInFragment : BaseCommonFragment() {
         lifecycleScope.launchWhenStarted {
             viewModel.signInButtonState.collect {
                 when (it) {
-                    is SignInButtonState.IsButtonSignInEnablerState -> {
-                        when (it.enabler) {
-                            true -> {
-                                signInButton.isEnabled = true
-                            }
-                            false -> {
-                                signInButton.isEnabled = false
-                            }
-                        }
+                    true -> {
+                        signInButton.isEnabled = true
                     }
-                    else -> {}
+                    false -> {
+                        signInButton.isEnabled = false
+                    }
                 }
             }
         }

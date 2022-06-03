@@ -1,7 +1,6 @@
 package com.foxminded.android.locationtrackerkotlin.accountinfo
 
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 
 class AccountInfoRepoImpl(
     private val firebaseAuth: FirebaseAuth,

@@ -12,14 +12,12 @@ import androidx.lifecycle.lifecycleScope
 import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.signup.SignUpViewModel
 import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
-import com.foxminded.android.locationtrackerkotlin.state.SignUpButtonState
+import com.foxminded.android.locationtrackerkotlin.utils.StateConst
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
 import com.foxminded.android.trackerapp.accountinfo.AccountInfoFragment
 import com.foxminded.android.trackerapp.databinding.FragmentSignUpBinding
 import com.foxminded.android.trackerapp.di.config.App
 import javax.inject.Inject
-
-private const val SIGN_UP = 1
 
 class SignUpFragment : BaseCommonFragment() {
 
@@ -73,7 +71,7 @@ class SignUpFragment : BaseCommonFragment() {
                 when (it) {
                     is BaseViewState.SuccessState -> {
                         when (it.state) {
-                            SIGN_UP -> {
+                            StateConst.SIGN_UP.state -> {
                                 showToastMessage(it.stringValue)
                                 displayAccountInfo()
                             }
@@ -97,17 +95,12 @@ class SignUpFragment : BaseCommonFragment() {
         lifecycleScope.launchWhenStarted {
             viewModel.buttonState.collect {
                 when (it) {
-                    is SignUpButtonState.IsButtonSignUpEnablerState -> {
-                        when (it.enabler) {
-                            true -> {
-                                signUpButton.isEnabled = true
-                            }
-                            false -> {
-                                signUpButton.isEnabled = false
-                            }
-                        }
+                    true -> {
+                        signUpButton.isEnabled = true
                     }
-                    else -> {}
+                    false -> {
+                        signUpButton.isEnabled = false
+                    }
                 }
             }
         }

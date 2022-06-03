@@ -13,16 +13,12 @@ import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.phoneauth.PhoneAuthViewModel
 import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
 import com.foxminded.android.locationtrackerkotlin.state.PhoneAuthButtonState
+import com.foxminded.android.locationtrackerkotlin.utils.StateConst.*
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
 import com.foxminded.android.trackerviewer.accountinfo.AccountInfoFragment
 import com.foxminded.android.trackerviewer.databinding.FragmentPhoneAuthBinding
 import com.foxminded.android.trackerviewer.di.config.App
 import javax.inject.Inject
-
-private const val SEND_SMS = 1
-private const val VERIFY_PHONE_WITH_CODE = 2
-private const val SIGN_IN_WITH_CREDENTIAL = 3
-private const val RESEND_CODE = 4
 
 class PhoneAuthFragment : BaseCommonFragment() {
 
@@ -79,16 +75,16 @@ class PhoneAuthFragment : BaseCommonFragment() {
                 when (it) {
                     is BaseViewState.SuccessState -> {
                         when (it.state) {
-                            SEND_SMS -> {
+                            SEND_SMS.state -> {
                                 showToastMessage(it.stringValue)
                             }
-                            VERIFY_PHONE_WITH_CODE -> {
+                            VERIFY_PHONE_WITH_CODE.state -> {
                                 showToastMessage(it.stringValue)
                             }
-                            SIGN_IN_WITH_CREDENTIAL -> {
+                            SIGN_IN_WITH_CREDENTIAL.state -> {
                                 displayAccountInfoFragment(it.stringValue)
                             }
-                            RESEND_CODE -> {
+                            RESEND_CODE.state -> {
                                 showToastMessage(it.stringValue)
                             }
                         }

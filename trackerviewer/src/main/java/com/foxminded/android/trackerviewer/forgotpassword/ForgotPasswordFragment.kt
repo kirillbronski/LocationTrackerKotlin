@@ -12,13 +12,11 @@ import androidx.lifecycle.lifecycleScope
 import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.forgotpassword.ForgotPasswordViewModel
 import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
-import com.foxminded.android.locationtrackerkotlin.state.ForgotPasswordButtonState
+import com.foxminded.android.locationtrackerkotlin.utils.StateConst.FORGOT_PASSWORD
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
 import com.foxminded.android.trackerviewer.databinding.FragmentForgotPasswordBinding
 import com.foxminded.android.trackerviewer.di.config.App
 import javax.inject.Inject
-
-private const val FORGOT_PASSWORD = 1
 
 class ForgotPasswordFragment : BaseCommonFragment() {
 
@@ -65,7 +63,7 @@ class ForgotPasswordFragment : BaseCommonFragment() {
                 when (it) {
                     is BaseViewState.SuccessState -> {
                         when (it.state) {
-                            FORGOT_PASSWORD -> {
+                            FORGOT_PASSWORD.state -> {
                                 showToastMessage(it.stringValue)
                                 emailEditText.text.clear()
                                 requireActivity().onBackPressed()
@@ -89,17 +87,12 @@ class ForgotPasswordFragment : BaseCommonFragment() {
         lifecycleScope.launchWhenStarted {
             viewModel.buttonState.collect {
                 when (it) {
-                    is ForgotPasswordButtonState.IsButtonResetPasswordEnablerState -> {
-                        when (it.enabler) {
-                            true -> {
-                                resetPasswordButton.isEnabled = true
-                            }
-                            false -> {
-                                resetPasswordButton.isEnabled = false
-                            }
-                        }
+                    true -> {
+                        resetPasswordButton.isEnabled = true
                     }
-                    else -> {}
+                    false -> {
+                        resetPasswordButton.isEnabled = false
+                    }
                 }
             }
         }

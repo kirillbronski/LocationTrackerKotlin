@@ -27,7 +27,7 @@ class MapsViewModel(
         val markers = mutableListOf<MarkerOptions>()
         viewModelScope.launch(Dispatchers.IO) {
             mapsRepoImpl.getDataFromFirestore()?.forEach {
-                if (date == null || date == it.dateAndTime) {
+                if (date == null || (it.dateAndTime?.contains(date) ?: it.dateAndTime) as Boolean) {
                     markers.add(buildMarker(it))
                 }
             }
