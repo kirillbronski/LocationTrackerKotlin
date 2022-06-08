@@ -1,7 +1,7 @@
 package com.foxminded.android.locationtrackerkotlin.signup
 
 import android.util.Log
-import com.google.firebase.auth.AuthResult
+import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
@@ -12,21 +12,29 @@ class SignUpRepoImpl(
 
     private val TAG = SignUpRepoImpl::class.java.simpleName
 
-    override suspend fun createAccountWithEmail(email: String, password: String): AuthResult {
-        return runCatching {
+    override suspend fun createAccountWithEmail(email: String, password: String): BaseResult =
+        runCatching {
             firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-        }.onSuccess {
-            sendEmailVerification(it.user)
-        }.onFailure {
-            Log.e(TAG, "createAccountWithEmail: ${it.message}", it)
-        }.getOrThrow()
-    }
+        }.fold(
+            onSuccess = {
+                sendEmailVerification(it.user)
+                BaseResult.Success(it.user?.email.toString())
+            },
+            onFailure = {
+                Log.e(TAG, "createAccountWithEmail: ${it.message}", it)
+                BaseResult.Error(it.message)
+            }
+        )
 
-    private suspend fun sendEmailVerification(user: FirebaseUser?) {
+    private suspend fun sendEmailVerification(user: FirebaseUser?) =
         runCatching {
             user?.sendEmailVerification()?.await()
-        }.onFailure {
-            Log.e(TAG, "sendEmailVerification: ${it.message}", it)
-        }
-    }
+        }.fold(
+            onSuccess = {
+                Log.e(TAG, "sendEmailVerification onSuccess: ${it.toString()}")
+            },
+            onFailure = {
+                Log.e(TAG, "sendEmailVerification onFailure: ${it.message}", it)
+            }
+        )
 }

@@ -9,6 +9,8 @@ import com.foxminded.android.locationtrackerkotlin.extensions.isValidPhone
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidSmsCode
 import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
 import com.foxminded.android.locationtrackerkotlin.state.PhoneAuthButtonState
+import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
+import com.foxminded.android.locationtrackerkotlin.utils.PhoneAuthResult
 import com.foxminded.android.locationtrackerkotlin.utils.StateConst.*
 import com.google.firebase.auth.PhoneAuthCredential
 import kotlinx.coroutines.Dispatchers
@@ -58,30 +60,46 @@ class PhoneAuthViewModel(
         _viewState.value = BaseViewState.LoadingState
         startButtonTimer()
         viewModelScope.launch(Dispatchers.IO) {
-            _viewState.value = try {
-                val result = phoneAuthRepo.verifyPhoneNumber(phoneNumber.value, activity)
-                Log.d(TAG, "verifyPhoneNumberViewModel: $result")
-                BaseViewState.SuccessState(SEND_SMS.state,
-                    "SMS send to number: ${phoneNumber.value}")
-            } catch (e: Exception) {
-                Log.e(TAG, "${e.message}", e)
-                BaseViewState.ErrorState(e.message.toString())
-            }
+            _viewState.value =
+                phoneAuthRepo.verifyPhoneNumber(phoneNumber.value, activity).run {
+                    when (this) {
+                        is PhoneAuthResult.CodeSent -> {
+                            Log.d(TAG, "verifyPhoneNumberViewModel: $this")
+                            BaseViewState.SuccessState(SEND_SMS.state,
+                                "SMS send to number: ${phoneNumber.value}")
+                        }
+                        is PhoneAuthResult.Error -> {
+                            Log.e(TAG, "${this.errorMessage}")
+                            BaseViewState.ErrorState(this.errorMessage)
+                        }
+                        else -> {
+                            BaseViewState.DefaultState
+                        }
+                    }
+                }
         }
     }
 
     fun verifyPhoneNumberWithCode() {
         _viewState.value = BaseViewState.LoadingState
         viewModelScope.launch(Dispatchers.IO) {
-            _viewState.value = try {
+            _viewState.value =
                 phoneAuthRepo.verifyPhoneNumberWithCode(smsCode.value).run {
-                    signInWithPhoneAuthCredential(this)
-                    BaseViewState.SuccessState(
-                        VERIFY_PHONE_WITH_CODE.state, "Number verified: ${phoneNumber.value}")
+                    when (this) {
+                        is PhoneAuthResult.VerificationCompleted -> {
+                            signInWithPhoneAuthCredential(this.credentials)
+                            BaseViewState.SuccessState(
+                                VERIFY_PHONE_WITH_CODE.state,
+                                "Number verified: ${phoneNumber.value}")
+                        }
+                        is PhoneAuthResult.Error -> {
+                            BaseViewState.ErrorState(this.errorMessage)
+                        }
+                        else -> {
+                            BaseViewState.DefaultState
+                        }
+                    }
                 }
-            } catch (e: Exception) {
-                BaseViewState.ErrorState(e.message.toString())
-            }
         }
     }
 
@@ -89,14 +107,19 @@ class PhoneAuthViewModel(
         if (credential != null) {
             _viewState.value = BaseViewState.LoadingState
             viewModelScope.launch(Dispatchers.IO) {
-                _viewState.value = try {
-                    phoneAuthRepo.signInWithPhoneAuthCredential(credential)
-                    BaseViewState.SuccessState(
-                        SIGN_IN_WITH_CREDENTIAL.state, phoneNumber.value)
-                } catch (e: Exception) {
-                    Log.e(TAG, "signInWithPhoneAuthCredential: ${e.message}", e)
-                    BaseViewState.ErrorState(e.message.toString())
-                }
+                _viewState.value =
+                    phoneAuthRepo.signInWithPhoneAuthCredential(credential).run {
+                        when (this) {
+                            is BaseResult.Success -> {
+                                BaseViewState.SuccessState(
+                                    SIGN_IN_WITH_CREDENTIAL.state, this.successMessage)
+                            }
+                            is BaseResult.Error -> {
+                                Log.e(TAG, "signInWithPhoneAuthCredential: ${this.errorMessage}")
+                                BaseViewState.ErrorState(this.errorMessage)
+                            }
+                        }
+                    }
             }
         }
     }
@@ -104,14 +127,22 @@ class PhoneAuthViewModel(
     fun resendVerificationSmsCode(activity: Activity) {
         _viewState.value = BaseViewState.LoadingState
         viewModelScope.launch(Dispatchers.IO) {
-            _viewState.value = try {
-                phoneAuthRepo.resendVerificationCode(phoneNumber.value, activity)
-                BaseViewState.SuccessState(
-                    RESEND_CODE.state, "SMS resend to number: ${phoneNumber.value}")
-            } catch (e: Exception) {
-                Log.e(TAG, "${e.message}", e)
-                BaseViewState.ErrorState(e.message.toString())
-            }
+            _viewState.value =
+                phoneAuthRepo.resendVerificationCode(phoneNumber.value, activity).run {
+                    when (this) {
+                        is PhoneAuthResult.CodeSent -> {
+                            BaseViewState.SuccessState(
+                                RESEND_CODE.state, "SMS resend to number: ${phoneNumber.value}")
+                        }
+                        is PhoneAuthResult.Error -> {
+                            Log.e(TAG, "${this.errorMessage}")
+                            BaseViewState.ErrorState(this.errorMessage)
+                        }
+                        else -> {
+                            BaseViewState.DefaultState
+                        }
+                    }
+                }
         }
     }
 

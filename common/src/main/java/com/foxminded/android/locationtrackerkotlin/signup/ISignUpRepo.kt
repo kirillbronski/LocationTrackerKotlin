@@ -1,9 +1,9 @@
 package com.foxminded.android.locationtrackerkotlin.signup
 
-import com.google.firebase.auth.AuthResult
+import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 
 interface ISignUpRepo {
 
-    suspend fun createAccountWithEmail(email: String, password: String): AuthResult
+    suspend fun createAccountWithEmail(email: String, password: String): BaseResult
 
 }

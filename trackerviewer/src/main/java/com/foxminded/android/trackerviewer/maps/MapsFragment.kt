@@ -16,9 +16,9 @@ import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.foxminded.android.locationtrackerkotlin.state.MapsState
+import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
 import com.foxminded.android.trackerviewer.R
 import com.foxminded.android.trackerviewer.databinding.FragmentMapsBinding
 import com.foxminded.android.trackerviewer.di.config.App
@@ -29,7 +29,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import java.util.*
 import javax.inject.Inject
 
-class MapsFragment : Fragment() {
+class MapsFragment : BaseCommonFragment() {
 
     private val TAG = MapsFragment::class.java.simpleName
     private lateinit var binding: FragmentMapsBinding
@@ -82,8 +82,11 @@ class MapsFragment : Fragment() {
                             map.addMarker(marker)
                         }
                     }
-                    is MapsState.DefaultState -> {
-                        SignInFragment.newInstance()
+                    is MapsState.SuccessState -> {
+                        displayFragment(SignInFragment.newInstance())
+                    }
+                    is MapsState.ErrorState -> {
+                        showToastMessage(it.errorMessage)
                     }
                     else -> {}
                 }

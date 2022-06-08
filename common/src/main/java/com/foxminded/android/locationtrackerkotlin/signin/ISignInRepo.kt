@@ -1,10 +1,10 @@
 package com.foxminded.android.locationtrackerkotlin.signin
 
-import com.google.firebase.auth.AuthResult
+import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 
 interface ISignInRepo {
 
-    suspend fun signIn(email: String, password: String): AuthResult?
+    suspend fun signIn(email: String, password: String): BaseResult
 
     suspend fun currentFirebaseUser(): String?
 

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxminded.android.locationtrackerkotlin.extensions.buildMarker
 import com.foxminded.android.locationtrackerkotlin.state.MapsState
+import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,8 +38,15 @@ class MapsViewModel(
 
     fun signOut() {
         viewModelScope.launch {
-            if (mapsRepoImpl.signOut()) {
-                _mapsState.value = MapsState.DefaultState
+            mapsRepoImpl.signOut().run {
+                when (this) {
+                    is BaseResult.Success -> {
+                        _mapsState.value = MapsState.SuccessState
+                    }
+                    is BaseResult.Error -> {
+                        _mapsState.value = MapsState.ErrorState(this.errorMessage)
+                    }
+                }
             }
         }
     }

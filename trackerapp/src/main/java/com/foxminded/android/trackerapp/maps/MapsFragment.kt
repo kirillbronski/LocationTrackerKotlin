@@ -14,10 +14,10 @@ import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
 import com.foxminded.android.locationtrackerkotlin.state.MapsState
+import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
 import com.foxminded.android.trackerapp.R
 import com.foxminded.android.trackerapp.databinding.FragmentMapsBinding
 import com.foxminded.android.trackerapp.di.config.App
@@ -29,7 +29,7 @@ import javax.inject.Inject
 
 private const val ACCOUNT_INFO = "ACCOUNT_INFO"
 
-class MapsFragment : Fragment() {
+class MapsFragment : BaseCommonFragment() {
 
     companion object {
         fun newInstance(accountInfo: String?) =
@@ -107,8 +107,8 @@ class MapsFragment : Fragment() {
         lifecycleScope.launchWhenStarted {
             viewModel.mapsState.collect {
                 when (it) {
-                    is BaseViewState.DefaultState -> {
-                        SignInFragment.newInstance()
+                    is BaseViewState.SuccessState -> {
+                        displayFragment(SignInFragment.newInstance())
                     }
                     is BaseViewState.ErrorState -> {
                         showToastMessage(it.message)
@@ -162,10 +162,6 @@ class MapsFragment : Fragment() {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun showToastMessage(text: String?) {
-        Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
     }
 
     private fun onGotPermissionsResult(grantResults: Map<String, Boolean>) {

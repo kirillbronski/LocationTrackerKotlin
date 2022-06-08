@@ -1,6 +1,7 @@
 package com.foxminded.android.trackerapp.maps
 
 import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
+import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 
 interface IMapsRepoFirestore {
 
@@ -8,6 +9,6 @@ interface IMapsRepoFirestore {
 
     suspend fun currentFirebaseUser(): String?
 
-    suspend fun signOut(): Boolean
+    suspend fun signOut(): BaseResult
 
 }

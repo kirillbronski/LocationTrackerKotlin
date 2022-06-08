@@ -1,10 +1,12 @@
 package com.foxminded.android.locationtrackerkotlin.signup
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidEmail
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidPassword
 import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.foxminded.android.locationtrackerkotlin.utils.StateConst.SIGN_UP
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,9 +53,19 @@ class SignUpViewModel(
     fun createAccount() {
         _viewState.value = BaseViewState.LoadingState
         viewModelScope.launch(Dispatchers.IO) {
-            signUpRepo.createAccountWithEmail(email.value, password.value)
-            _viewState.value = BaseViewState.SuccessState(SIGN_UP.state,
-                "Complete! Verification link sent to ${email.value}")
+            _viewState.value =
+                signUpRepo.createAccountWithEmail(email.value, password.value).run {
+                    when (this) {
+                        is BaseResult.Success -> {
+                            BaseViewState.SuccessState(SIGN_UP.state,
+                                "Complete! Verification link sent to ${this.successMessage}")
+                        }
+                        is BaseResult.Error -> {
+                            Log.d(TAG, "createAccount: ${this.errorMessage}")
+                            BaseViewState.ErrorState(this.errorMessage)
+                        }
+                    }
+                }
         }
     }
 }

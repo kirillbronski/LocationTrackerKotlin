@@ -14,6 +14,8 @@ import androidx.work.WorkManager
 import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
 import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
 import com.foxminded.android.locationtrackerkotlin.state.MapsState
+import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
+import com.foxminded.android.locationtrackerkotlin.utils.StateConst.SIGN_OUT
 import com.foxminded.android.trackerapp.utils.DataConvert
 import com.foxminded.android.trackerapp.utils.IConfigApp
 import kotlinx.coroutines.Dispatchers
@@ -158,12 +160,16 @@ class MapsViewModel(
 
     fun signOut() {
         viewModelScope.launch {
-            try {
-                mapsRepoFirestoreImpl.signOut()
-                _mapsState.value = BaseViewState.DefaultState
-            } catch (e: Exception) {
-                Log.d(TAG, "signOut() returned: ${e.message}")
-                _mapsState.value = BaseViewState.ErrorState(e.message.toString())
+            mapsRepoFirestoreImpl.signOut().run {
+                when (this) {
+                    is BaseResult.Success -> {
+                        _mapsState.value = BaseViewState.SuccessState(SIGN_OUT.state, "Sign out!")
+                    }
+                    is BaseResult.Error -> {
+                        Log.d(TAG, "signOut() returned: ${this.errorMessage}")
+                        _mapsState.value = BaseViewState.ErrorState(this.errorMessage)
+                    }
+                }
             }
         }
     }

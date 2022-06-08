@@ -2,9 +2,13 @@ package com.foxminded.android.locationtrackerkotlin.phoneauth
 
 import android.app.Activity
 import android.util.Log
+import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.foxminded.android.locationtrackerkotlin.utils.PhoneAuthResult
 import com.google.firebase.FirebaseException
-import com.google.firebase.auth.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthOptions
+import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.TimeUnit
@@ -39,6 +43,7 @@ class PhoneAuthRepoImpl(
                     }
 
                     override fun onVerificationFailed(e: FirebaseException) {
+                        it.resume(PhoneAuthResult.Error(e.message))
                         it.resumeWithException(e)
                         Log.e(TAG, "onVerificationFailed: ", e)
                     }
@@ -57,16 +62,18 @@ class PhoneAuthRepoImpl(
         }
 
 
-    override suspend fun verifyPhoneNumberWithCode(code: String): PhoneAuthCredential? {
+    override suspend fun verifyPhoneNumberWithCode(code: String): PhoneAuthResult =
 
-        return runCatching {
-            firebaseAuth.currentUser
-            Log.d(TAG, "verifyPhoneNumberWithCode: ${firebaseAuth.currentUser?.phoneNumber}")
+        runCatching {
             PhoneAuthProvider.getCredential(mVerificationId, code)
-        }.onFailure {
-            Log.d(TAG, "verifyPhoneNumberWithCode() returned: ${it.message}", it)
-        }.getOrNull()
-    }
+        }.fold(
+            onSuccess = {
+                PhoneAuthResult.VerificationCompleted(it)
+            },
+            onFailure = {
+                PhoneAuthResult.Error(it.message)
+            }
+        )
 
     override suspend fun resendVerificationCode(
         phoneNumber: String,
@@ -85,6 +92,7 @@ class PhoneAuthRepoImpl(
 
                     override fun onVerificationFailed(e: FirebaseException) {
                         it.resumeWithException(e)
+                        it.resume(PhoneAuthResult.Error(e.message))
                         Log.e(TAG, "onVerificationFailed resend: ", e)
                     }
 
@@ -104,13 +112,16 @@ class PhoneAuthRepoImpl(
                 .build())
         }
 
-    override suspend fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential): AuthResult? {
-        return runCatching {
-            Log.d(TAG, "signInWithPhoneAuthCredential: ${firebaseAuth.currentUser?.phoneNumber}")
+    override suspend fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential): BaseResult =
+        runCatching {
             firebaseAuth.signInWithCredential(credential).await()
-        }.onFailure {
-            Log.e(TAG, "signInWithPhoneAuthCredential: ${it.message}", it)
-        }.getOrNull()
-    }
-
+        }.fold(
+            onSuccess = {
+                BaseResult.Success(it.user?.phoneNumber)
+            },
+            onFailure = {
+                Log.e(TAG, "signInWithPhoneAuthCredential: ${it.message}", it)
+                BaseResult.Error(it.message)
+            }
+        )
 }

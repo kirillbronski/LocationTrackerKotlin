@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidEmail
 import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.foxminded.android.locationtrackerkotlin.utils.StateConst.FORGOT_PASSWORD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,14 +34,18 @@ class ForgotPasswordViewModel(
     fun passwordReset() {
         _viewState.value = BaseViewState.LoadingState
         viewModelScope.launch(Dispatchers.IO) {
-            if (forgotPasswordRepoImpl.sendPasswordReset(email.value)) {
-                _viewState.value = BaseViewState.SuccessState(
-                    FORGOT_PASSWORD.state,
-                    stringValue = "Password reset link sent to: ${email.value}")
-            } else {
-                _viewState.value = BaseViewState.ErrorState("Failed! Details in logs")
+            forgotPasswordRepoImpl.sendPasswordReset(email.value).run {
+                when (this) {
+                    is BaseResult.Success -> {
+                        _viewState.value = BaseViewState.SuccessState(
+                            FORGOT_PASSWORD.state,
+                            stringValue = "Password reset link sent to: ${this.successMessage}")
+                    }
+                    is BaseResult.Error -> {
+                        _viewState.value = BaseViewState.ErrorState(this.errorMessage)
+                    }
+                }
             }
         }
     }
-
 }

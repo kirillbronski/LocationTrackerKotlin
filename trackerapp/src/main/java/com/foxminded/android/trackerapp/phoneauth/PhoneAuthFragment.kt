@@ -58,6 +58,7 @@ class PhoneAuthFragment : BaseCommonFragment() {
         verifyButton.setOnClickListener {
             viewModel.verifyPhoneNumberWithCode()
             resendButton.isEnabled = true
+            smsCodeEditText.text.clear()
         }
 
         resendButton.setOnClickListener {

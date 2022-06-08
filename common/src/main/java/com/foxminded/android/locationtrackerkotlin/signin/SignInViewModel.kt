@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidEmail
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidPassword
 import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.foxminded.android.locationtrackerkotlin.utils.StateConst.ACCOUNT
 import com.foxminded.android.locationtrackerkotlin.utils.StateConst.SIGN_IN
 import kotlinx.coroutines.Dispatchers
@@ -50,21 +51,28 @@ class SignInViewModel(
     fun signIn() {
         _viewState.value = BaseViewState.LoadingState
         viewModelScope.launch(Dispatchers.IO) {
-            _viewState.value = if (signInRepo.signIn(email.value, password.value) != null) {
-                BaseViewState.SuccessState(SIGN_IN.state, "Sign in Success!")
-            } else {
-                BaseViewState.ErrorState("Failed! Details in logs")
+            _viewState.value = signInRepo.signIn(email.value, password.value).run {
+                when (this) {
+                    is BaseResult.Success -> {
+                        BaseViewState.SuccessState(SIGN_IN.state, this.successMessage)
+                    }
+                    is BaseResult.Error -> {
+                        BaseViewState.ErrorState(this.errorMessage)
+                    }
+                }
             }
         }
     }
 
     fun requestAccountInfo() {
         viewModelScope.launch(Dispatchers.IO) {
-            val userInfo = signInRepo.currentFirebaseUser()
-            _viewState.value = if (userInfo != null) {
-                BaseViewState.SuccessState(state = ACCOUNT.state, stringValue = userInfo)
-            } else {
-                BaseViewState.ErrorState("Please sign in or sign up")
+            signInRepo.currentFirebaseUser().run {
+                _viewState.value = if (this != null) {
+                    BaseViewState.SuccessState(state = ACCOUNT.state,
+                        stringValue = this)
+                } else {
+                    BaseViewState.ErrorState("Please sign in or sign up")
+                }
             }
         }
     }

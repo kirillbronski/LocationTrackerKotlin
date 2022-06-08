@@ -20,11 +20,13 @@ class AccountInfoViewModel(
 
     fun requestAccountInfo() {
         viewModelScope.launch(Dispatchers.IO) {
-            val userInfo = accountInfoRepoImpl.currentFirebaseUser()
-            _viewState.value = if (userInfo != null) {
-                BaseViewState.SuccessState(state = ACCOUNT.state, stringValue = userInfo)
-            } else {
-                BaseViewState.ErrorState("Please sign in or sign up")
+            accountInfoRepoImpl.currentFirebaseUser().run {
+                _viewState.value = if (this != null) {
+                    BaseViewState.SuccessState(state = ACCOUNT.state,
+                        stringValue = this)
+                } else {
+                    BaseViewState.ErrorState("Please sign in or sign up")
+                }
             }
         }
     }

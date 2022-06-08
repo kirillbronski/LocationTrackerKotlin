@@ -2,6 +2,7 @@ package com.foxminded.android.trackerviewer.maps
 
 import android.util.Log
 import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
+import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -31,11 +32,14 @@ class MapsRepoImpl(
 
     }
 
-    override suspend fun signOut(): Boolean {
-        firebaseAuth.signOut()
-        if (firebaseAuth.currentUser == null) {
-            return true
-        }
-        return false
-    }
+    override suspend fun signOut(): BaseResult =
+        runCatching {
+            firebaseAuth.signOut()
+        }.fold(
+            onSuccess = {
+                BaseResult.Success(null)
+            },
+            onFailure = {
+                BaseResult.Error(it.message)
+            })
 }
