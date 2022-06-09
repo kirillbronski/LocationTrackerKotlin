@@ -14,7 +14,7 @@ abstract class BaseCommonFragment : Fragment() {
     private val TAG = BaseCommonFragment::class.java.simpleName
 
     protected fun displayFragment(fragment: Fragment) {
-        (requireActivity() as CommonActivity).displayFragment() {
+        (requireActivity() as CommonActivity).displayFragment(fragment) {
             replace(R.id.main_fragment_container, fragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .addToBackStack(null)
