@@ -4,6 +4,8 @@ import android.text.TextUtils
 import android.util.Patterns
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -25,6 +27,10 @@ fun textFieldListener(editText: EditText): Flow<String> {
         }
         awaitClose()
     }
+}
+
+inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction) {
+    beginTransaction().func().commit()
 }
 
 fun String.isValidEmail() =
