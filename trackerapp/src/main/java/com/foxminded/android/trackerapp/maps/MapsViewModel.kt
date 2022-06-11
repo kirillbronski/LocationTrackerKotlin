@@ -16,7 +16,7 @@ import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
 import com.foxminded.android.locationtrackerkotlin.state.MapsState
 import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.foxminded.android.locationtrackerkotlin.utils.StateConst.SIGN_OUT
-import com.foxminded.android.trackerapp.utils.DataConvert
+import com.foxminded.android.trackerapp.utils.DateConvert
 import com.foxminded.android.trackerapp.utils.IConfigApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -113,7 +113,7 @@ class MapsViewModel(
         val user = User(account,
             location.latitude,
             location.longitude,
-            DataConvert.dateToStringFormat(location.time))
+            DateConvert.dateToStringFormat(location.time))
 
         viewModelScope.launch {
             try {
@@ -132,7 +132,7 @@ class MapsViewModel(
                     mapsRepoImpl.insertInTable(account,
                         location.latitude,
                         location.longitude,
-                        DataConvert.dateToStringFormat(location.time))
+                        DateConvert.dateToStringFormat(location.time))
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "insertDataToRoomTableSilently() returned: ${e.message}")

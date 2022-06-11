@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import java.text.SimpleDateFormat
 import java.util.*
 
-object DataConvert {
+object DateConvert {
     @SuppressLint("SimpleDateFormat")
     fun dateToStringFormat(date: Long): String {
         val simpleDateFormat = SimpleDateFormat("yyyy-M-d HH:mm:ss")
