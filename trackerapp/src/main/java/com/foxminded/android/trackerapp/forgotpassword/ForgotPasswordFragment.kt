@@ -11,7 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
 import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.forgotpassword.ForgotPasswordViewModel
-import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.utils.StateConst.FORGOT_PASSWORD
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
 import com.foxminded.android.trackerapp.databinding.FragmentForgotPasswordBinding
@@ -61,7 +61,7 @@ class ForgotPasswordFragment : BaseCommonFragment() {
         lifecycleScope.launchWhenStarted {
             viewModel.viewState.collect {
                 when (it) {
-                    is BaseViewState.SuccessState -> {
+                    is ViewState.SuccessState -> {
                         when (it.state) {
                             FORGOT_PASSWORD.state -> {
                                 showToastMessage(it.stringValue)
@@ -71,10 +71,10 @@ class ForgotPasswordFragment : BaseCommonFragment() {
                         }
                         hideProgressIndicator(progressBar)
                     }
-                    is BaseViewState.ErrorState -> {
+                    is ViewState.ErrorState -> {
                         showToastMessage(it.message)
                     }
-                    is BaseViewState.LoadingState -> {
+                    is ViewState.LoadingState -> {
                         showProgressIndicator(progressBar)
                     }
                     else -> {}

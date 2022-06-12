@@ -12,7 +12,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
-import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.state.MapsState
 import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.foxminded.android.locationtrackerkotlin.utils.StateConst.SIGN_OUT
@@ -35,8 +35,8 @@ class MapsViewModel(
 ) : ViewModel() {
 
     private val TAG = MapsViewModel::class.java.simpleName
-    private val _mapsState = MutableStateFlow<BaseViewState>(BaseViewState.DefaultState)
-    val mapsState: StateFlow<BaseViewState> = _mapsState.asStateFlow()
+    private val _mapsState = MutableStateFlow<ViewState>(ViewState.DefaultState)
+    val mapsState: StateFlow<ViewState> = _mapsState.asStateFlow()
     private val _mapsLocationState = MutableStateFlow<MapsState>(MapsState.DefaultState)
     val mapsLocationState: StateFlow<MapsState> = _mapsLocationState.asStateFlow()
 
@@ -120,7 +120,7 @@ class MapsViewModel(
                 mapsRepoFirestoreImpl.insertDataToFirestore(user)
             } catch (e: Exception) {
                 Log.d(TAG, "insertDataToFirestoreSilently() returned: ${e.message}")
-                _mapsState.value = BaseViewState.ErrorState(e.message.toString())
+                _mapsState.value = ViewState.ErrorState(e.message.toString())
             }
         }
     }
@@ -136,7 +136,7 @@ class MapsViewModel(
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "insertDataToRoomTableSilently() returned: ${e.message}")
-                _mapsState.value = BaseViewState.ErrorState(e.message.toString())
+                _mapsState.value = ViewState.ErrorState(e.message.toString())
             }
         }
     }
@@ -148,7 +148,7 @@ class MapsViewModel(
                 Log.d(TAG, "deleteAllDataFromTable: $result")
             } catch (e: Exception) {
                 Log.d(TAG, "deleteAllDataFromTable() returned: ${e.message}")
-                _mapsState.value = BaseViewState.ErrorState(e.message.toString())
+                _mapsState.value = ViewState.ErrorState(e.message.toString())
             }
         }
     }
@@ -163,11 +163,11 @@ class MapsViewModel(
             mapsRepoFirestoreImpl.signOut().run {
                 when (this) {
                     is BaseResult.Success -> {
-                        _mapsState.value = BaseViewState.SuccessState(SIGN_OUT.state, "Sign out!")
+                        _mapsState.value = ViewState.SuccessState(SIGN_OUT.state, "Sign out!")
                     }
                     is BaseResult.Error -> {
                         Log.d(TAG, "signOut() returned: ${this.errorMessage}")
-                        _mapsState.value = BaseViewState.ErrorState(this.errorMessage)
+                        _mapsState.value = ViewState.ErrorState(this.errorMessage)
                     }
                 }
             }

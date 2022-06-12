@@ -3,7 +3,7 @@ package com.foxminded.android.locationtrackerkotlin.forgotpassword
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidEmail
-import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.foxminded.android.locationtrackerkotlin.utils.StateConst.FORGOT_PASSWORD
 import kotlinx.coroutines.Dispatchers
@@ -16,8 +16,8 @@ class ForgotPasswordViewModel(
     private val forgotPasswordRepoImpl: IForgotPasswordRepo,
 ) : ViewModel() {
 
-    private val _viewState = MutableStateFlow<BaseViewState>(BaseViewState.DefaultState)
-    val viewState: StateFlow<BaseViewState> = _viewState.asStateFlow()
+    private val _viewState = MutableStateFlow<ViewState>(ViewState.DefaultState)
+    val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
 
     private val _buttonState = MutableStateFlow(false)
     val buttonState: StateFlow<Boolean> = _buttonState.asStateFlow()
@@ -32,17 +32,17 @@ class ForgotPasswordViewModel(
     }
 
     fun passwordReset() {
-        _viewState.value = BaseViewState.LoadingState
+        _viewState.value = ViewState.LoadingState
         viewModelScope.launch(Dispatchers.IO) {
             forgotPasswordRepoImpl.sendPasswordReset(email.value).run {
                 when (this) {
                     is BaseResult.Success -> {
-                        _viewState.value = BaseViewState.SuccessState(
+                        _viewState.value = ViewState.SuccessState(
                             FORGOT_PASSWORD.state,
                             stringValue = "Password reset link sent to: ${this.successMessage}")
                     }
                     is BaseResult.Error -> {
-                        _viewState.value = BaseViewState.ErrorState(this.errorMessage)
+                        _viewState.value = ViewState.ErrorState(this.errorMessage)
                     }
                 }
             }

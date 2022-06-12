@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidPhone
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidSmsCode
-import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.state.PhoneAuthButtonState
 import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.foxminded.android.locationtrackerkotlin.utils.PhoneAuthResult
@@ -32,8 +32,8 @@ class PhoneAuthViewModel(
     private var phoneNumber = MutableStateFlow("")
     private var smsCode = MutableStateFlow("")
 
-    private val _viewState = MutableStateFlow<BaseViewState>(BaseViewState.DefaultState)
-    val viewState: StateFlow<BaseViewState> = _viewState.asStateFlow()
+    private val _viewState = MutableStateFlow<ViewState>(ViewState.DefaultState)
+    val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
     private val _buttonState =
         MutableStateFlow<PhoneAuthButtonState>(PhoneAuthButtonState.DefaultState)
     val buttonState: StateFlow<PhoneAuthButtonState> = _buttonState.asStateFlow()
@@ -57,7 +57,7 @@ class PhoneAuthViewModel(
     }
 
     fun verifyPhoneNumber(activity: Activity) {
-        _viewState.value = BaseViewState.LoadingState
+        _viewState.value = ViewState.LoadingState
         startButtonTimer()
         viewModelScope.launch(Dispatchers.IO) {
             _viewState.value =
@@ -65,15 +65,15 @@ class PhoneAuthViewModel(
                     when (this) {
                         is PhoneAuthResult.CodeSent -> {
                             Log.d(TAG, "verifyPhoneNumberViewModel: $this")
-                            BaseViewState.SuccessState(SEND_SMS.state,
+                            ViewState.SuccessState(SEND_SMS.state,
                                 "SMS send to number: ${phoneNumber.value}")
                         }
                         is PhoneAuthResult.Error -> {
                             Log.e(TAG, "${this.errorMessage}")
-                            BaseViewState.ErrorState(this.errorMessage)
+                            ViewState.ErrorState(this.errorMessage)
                         }
                         else -> {
-                            BaseViewState.DefaultState
+                            ViewState.DefaultState
                         }
                     }
                 }
@@ -81,22 +81,22 @@ class PhoneAuthViewModel(
     }
 
     fun verifyPhoneNumberWithCode() {
-        _viewState.value = BaseViewState.LoadingState
+        _viewState.value = ViewState.LoadingState
         viewModelScope.launch(Dispatchers.IO) {
             _viewState.value =
                 phoneAuthRepo.verifyPhoneNumberWithCode(smsCode.value).run {
                     when (this) {
                         is PhoneAuthResult.VerificationCompleted -> {
                             signInWithPhoneAuthCredential(this.credentials)
-                            BaseViewState.SuccessState(
+                            ViewState.SuccessState(
                                 VERIFY_PHONE_WITH_CODE.state,
                                 "Number verified: ${phoneNumber.value}")
                         }
                         is PhoneAuthResult.Error -> {
-                            BaseViewState.ErrorState(this.errorMessage)
+                            ViewState.ErrorState(this.errorMessage)
                         }
                         else -> {
-                            BaseViewState.DefaultState
+                            ViewState.DefaultState
                         }
                     }
                 }
@@ -105,18 +105,18 @@ class PhoneAuthViewModel(
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential?) {
         if (credential != null) {
-            _viewState.value = BaseViewState.LoadingState
+            _viewState.value = ViewState.LoadingState
             viewModelScope.launch(Dispatchers.IO) {
                 _viewState.value =
                     phoneAuthRepo.signInWithPhoneAuthCredential(credential).run {
                         when (this) {
                             is BaseResult.Success -> {
-                                BaseViewState.SuccessState(
+                                ViewState.SuccessState(
                                     SIGN_IN_WITH_CREDENTIAL.state, this.successMessage)
                             }
                             is BaseResult.Error -> {
                                 Log.e(TAG, "signInWithPhoneAuthCredential: ${this.errorMessage}")
-                                BaseViewState.ErrorState(this.errorMessage)
+                                ViewState.ErrorState(this.errorMessage)
                             }
                         }
                     }
@@ -125,21 +125,21 @@ class PhoneAuthViewModel(
     }
 
     fun resendVerificationSmsCode(activity: Activity) {
-        _viewState.value = BaseViewState.LoadingState
+        _viewState.value = ViewState.LoadingState
         viewModelScope.launch(Dispatchers.IO) {
             _viewState.value =
                 phoneAuthRepo.resendVerificationCode(phoneNumber.value, activity).run {
                     when (this) {
                         is PhoneAuthResult.CodeSent -> {
-                            BaseViewState.SuccessState(
+                            ViewState.SuccessState(
                                 RESEND_CODE.state, "SMS resend to number: ${phoneNumber.value}")
                         }
                         is PhoneAuthResult.Error -> {
                             Log.e(TAG, "${this.errorMessage}")
-                            BaseViewState.ErrorState(this.errorMessage)
+                            ViewState.ErrorState(this.errorMessage)
                         }
                         else -> {
-                            BaseViewState.DefaultState
+                            ViewState.DefaultState
                         }
                     }
                 }

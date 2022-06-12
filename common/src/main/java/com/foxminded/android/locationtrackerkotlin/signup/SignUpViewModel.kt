@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidEmail
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidPassword
-import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.foxminded.android.locationtrackerkotlin.utils.StateConst.SIGN_UP
 import kotlinx.coroutines.Dispatchers
@@ -20,8 +20,8 @@ class SignUpViewModel(
 
     private val TAG = SignUpViewModel::class.java.simpleName
 
-    private val _viewState = MutableStateFlow<BaseViewState>(BaseViewState.DefaultState)
-    val viewState: StateFlow<BaseViewState> = _viewState.asStateFlow()
+    private val _viewState = MutableStateFlow<ViewState>(ViewState.DefaultState)
+    val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
 
     private val _buttonState = MutableStateFlow(false)
     val buttonState: StateFlow<Boolean> = _buttonState.asStateFlow()
@@ -51,18 +51,18 @@ class SignUpViewModel(
     }
 
     fun createAccount() {
-        _viewState.value = BaseViewState.LoadingState
+        _viewState.value = ViewState.LoadingState
         viewModelScope.launch(Dispatchers.IO) {
             _viewState.value =
                 signUpRepo.createAccountWithEmail(email.value, password.value).run {
                     when (this) {
                         is BaseResult.Success -> {
-                            BaseViewState.SuccessState(SIGN_UP.state,
+                            ViewState.SuccessState(SIGN_UP.state,
                                 "Complete! Verification link sent to ${this.successMessage}")
                         }
                         is BaseResult.Error -> {
                             Log.d(TAG, "createAccount: ${this.errorMessage}")
-                            BaseViewState.ErrorState(this.errorMessage)
+                            ViewState.ErrorState(this.errorMessage)
                         }
                     }
                 }

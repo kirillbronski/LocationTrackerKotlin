@@ -12,7 +12,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
 import com.foxminded.android.locationtrackerkotlin.accountinfo.AccountInfoViewModel
-import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.utils.StateConst.*
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
 import com.foxminded.android.trackerviewer.databinding.FragmentAccountInfoBinding
@@ -84,7 +84,7 @@ class AccountInfoFragment : BaseCommonFragment() {
         lifecycleScope.launchWhenStarted {
             viewModel.viewState.collect {
                 when (it) {
-                    is BaseViewState.SuccessState -> {
+                    is ViewState.SuccessState -> {
                         when (it.state) {
                             ACCOUNT.state -> {
                                 if (accountInfo != null) {
@@ -102,7 +102,7 @@ class AccountInfoFragment : BaseCommonFragment() {
                             }
                         }
                     }
-                    is BaseViewState.ErrorState -> {
+                    is ViewState.ErrorState -> {
                         showToastMessage(it.message)
                         displaySignInFragment()
                     }

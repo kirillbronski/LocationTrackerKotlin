@@ -44,7 +44,6 @@ class PhoneAuthRepoImpl(
 
                     override fun onVerificationFailed(e: FirebaseException) {
                         it.resume(PhoneAuthResult.Error(e.message))
-                        it.resumeWithException(e)
                         Log.e(TAG, "onVerificationFailed: ", e)
                     }
 
@@ -91,7 +90,6 @@ class PhoneAuthRepoImpl(
                     }
 
                     override fun onVerificationFailed(e: FirebaseException) {
-                        it.resumeWithException(e)
                         it.resume(PhoneAuthResult.Error(e.message))
                         Log.e(TAG, "onVerificationFailed resend: ", e)
                     }

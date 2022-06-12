@@ -11,7 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
 import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.phoneauth.PhoneAuthViewModel
-import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.state.PhoneAuthButtonState
 import com.foxminded.android.locationtrackerkotlin.utils.StateConst.*
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
@@ -73,7 +73,7 @@ class PhoneAuthFragment : BaseCommonFragment() {
         lifecycleScope.launchWhenStarted {
             viewModel.viewState.collect {
                 when (it) {
-                    is BaseViewState.SuccessState -> {
+                    is ViewState.SuccessState -> {
                         when (it.state) {
                             SEND_SMS.state -> {
                                 showToastMessage(it.stringValue)
@@ -90,10 +90,10 @@ class PhoneAuthFragment : BaseCommonFragment() {
                         }
                         hideProgressIndicator(progressBar)
                     }
-                    is BaseViewState.LoadingState -> {
+                    is ViewState.LoadingState -> {
                         showProgressIndicator(progressBar)
                     }
-                    is BaseViewState.ErrorState -> {
+                    is ViewState.ErrorState -> {
                         showToastMessage(it.message)
                         hideProgressIndicator(progressBar)
                     }

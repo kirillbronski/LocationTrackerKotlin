@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidEmail
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidPassword
-import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.foxminded.android.locationtrackerkotlin.utils.StateConst.ACCOUNT
 import com.foxminded.android.locationtrackerkotlin.utils.StateConst.SIGN_IN
@@ -20,8 +20,8 @@ class SignInViewModel(
 
     private val TAG = SignInViewModel::class.java.simpleName
 
-    private val _viewState = MutableStateFlow<BaseViewState>(BaseViewState.DefaultState)
-    val viewState: StateFlow<BaseViewState> = _viewState.asStateFlow()
+    private val _viewState = MutableStateFlow<ViewState>(ViewState.DefaultState)
+    val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
 
     private val _signInButtonState = MutableStateFlow(false)
     val signInButtonState: StateFlow<Boolean> = _signInButtonState.asStateFlow()
@@ -49,15 +49,15 @@ class SignInViewModel(
     }
 
     fun signIn() {
-        _viewState.value = BaseViewState.LoadingState
+        _viewState.value = ViewState.LoadingState
         viewModelScope.launch(Dispatchers.IO) {
             _viewState.value = signInRepo.signIn(email.value, password.value).run {
                 when (this) {
                     is BaseResult.Success -> {
-                        BaseViewState.SuccessState(SIGN_IN.state, this.successMessage)
+                        ViewState.SuccessState(SIGN_IN.state, this.successMessage)
                     }
                     is BaseResult.Error -> {
-                        BaseViewState.ErrorState(this.errorMessage)
+                        ViewState.ErrorState(this.errorMessage)
                     }
                 }
             }
@@ -68,10 +68,10 @@ class SignInViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             signInRepo.currentFirebaseUser().run {
                 _viewState.value = if (this != null) {
-                    BaseViewState.SuccessState(state = ACCOUNT.state,
+                    ViewState.SuccessState(state = ACCOUNT.state,
                         stringValue = this)
                 } else {
-                    BaseViewState.ErrorState("Please sign in or sign up")
+                    ViewState.ErrorState("Please sign in or sign up")
                 }
             }
         }

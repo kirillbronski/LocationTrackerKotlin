@@ -11,7 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
 import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.signup.SignUpViewModel
-import com.foxminded.android.locationtrackerkotlin.state.BaseViewState
+import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.utils.StateConst.SIGN_UP
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
 import com.foxminded.android.trackerviewer.accountinfo.AccountInfoFragment
@@ -69,7 +69,7 @@ class SignUpFragment : BaseCommonFragment() {
         lifecycleScope.launchWhenStarted {
             viewModel.viewState.collect {
                 when (it) {
-                    is BaseViewState.SuccessState -> {
+                    is ViewState.SuccessState -> {
                         when (it.state) {
                             SIGN_UP.state -> {
                                 showToastMessage(it.stringValue)
@@ -78,10 +78,10 @@ class SignUpFragment : BaseCommonFragment() {
                         }
                         hideProgressIndicator(progressBar)
                     }
-                    is BaseViewState.LoadingState -> {
+                    is ViewState.LoadingState -> {
                         showProgressIndicator(progressBar)
                     }
-                    is BaseViewState.ErrorState -> {
+                    is ViewState.ErrorState -> {
                         showToastMessage(it.message)
                         hideProgressIndicator(progressBar)
                     }
