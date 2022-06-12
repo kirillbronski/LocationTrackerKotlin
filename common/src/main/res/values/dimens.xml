@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="hint_size">18sp</dimen>
+    <dimen name="default_size_button">300dp</dimen>
+    <dimen name="button_padding">20dp</dimen>
+    <dimen name="button_margin">8dp</dimen>
+    <dimen name="button_width">300dp</dimen>
+    <dimen name="text_view_margin">8dp</dimen>
+    <dimen name="layout_margin">8dp</dimen>
+    <dimen name="heading_text_size">40sp</dimen>
+</resources>
