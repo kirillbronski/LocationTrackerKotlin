@@ -1,6 +1,7 @@
 package com.foxminded.android.trackerapp.maps
 
-import android.Manifest
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -55,7 +56,7 @@ class MapsFragment : BaseCommonFragment() {
     )
 
     private val callback = OnMapReadyCallback { map ->
-        setUpMap(map)
+        settingsMap(map)
         checkViewState()
         checkMapState()
     }
@@ -78,11 +79,9 @@ class MapsFragment : BaseCommonFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        permissionsRequestLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE))
+        permissionsRequestLauncher.launch(arrayOf(ACCESS_FINE_LOCATION, WRITE_EXTERNAL_STORAGE))
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
-        viewModel.requestLocation()
     }
 
     override fun onResume() {
@@ -92,7 +91,7 @@ class MapsFragment : BaseCommonFragment() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun setUpMap(map: GoogleMap) {
+    private fun settingsMap(map: GoogleMap) {
         try {
             map.isMyLocationEnabled = true
         } catch (e: SecurityException) {
@@ -171,6 +170,7 @@ class MapsFragment : BaseCommonFragment() {
                 R.string.all_permission_granted,
                 Toast.LENGTH_SHORT
             ).show()
+            viewModel.requestLocation()
         } else {
             askUserForOpenInAppSettings()
         }

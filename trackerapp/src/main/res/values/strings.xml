@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tracker App</string>
+    <string name="app_name">Location Tracker</string>
     <string name="all_permission_granted">Permissions granted</string>
     <string name="permission_denied">Permission denied</string>
     <string name="permission_denied_forever_message">"You have denied permissions forever. You can change your decision in the app settings.\n\nWould you like to open app settings?"</string>
