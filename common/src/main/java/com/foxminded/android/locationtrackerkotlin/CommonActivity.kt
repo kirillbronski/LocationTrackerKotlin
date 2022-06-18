@@ -11,7 +11,7 @@ abstract class CommonActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_common)
     }
 
     fun displayFragment(
