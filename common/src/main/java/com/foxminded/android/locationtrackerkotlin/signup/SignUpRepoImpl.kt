@@ -31,7 +31,7 @@ class SignUpRepoImpl(
             user?.sendEmailVerification()?.await()
         }.fold(
             onSuccess = {
-                Log.e(TAG, "sendEmailVerification onSuccess: ${it.toString()}")
+                Log.e(TAG, "sendEmailVerification onSuccess")
             },
             onFailure = {
                 Log.e(TAG, "sendEmailVerification onFailure: ${it.message}", it)

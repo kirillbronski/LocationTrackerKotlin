@@ -17,12 +17,14 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
-import com.foxminded.android.locationtrackerkotlin.state.MapsState
+import androidx.navigation.fragment.findNavController
+import com.foxminded.android.locationtrackerkotlin.state.MapViewState
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.DEFAULT
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.SIGN_OUT
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
 import com.foxminded.android.trackerviewer.R
 import com.foxminded.android.trackerviewer.databinding.FragmentMapsBinding
 import com.foxminded.android.trackerviewer.di.config.App
-import com.foxminded.android.trackerviewer.signin.SignInFragment
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -74,19 +76,26 @@ class MapsFragment : BaseCommonFragment() {
 
     private fun checkState(map: GoogleMap) {
         lifecycleScope.launchWhenStarted {
-            viewModel.mapsState.collect {
+            viewModel.mapViewState.collect {
                 when (it) {
-                    is MapsState.MarkerState -> {
+                    is MapViewState.MarkerViewState -> {
                         map.clear()
                         it.markers.forEach { marker ->
                             map.addMarker(marker)
                         }
                     }
-                    is MapsState.SuccessState -> {
-                        displayFragment(SignInFragment.newInstance())
+                    is MapViewState.SuccessState -> {
+                        when (it.state) {
+                            SIGN_OUT.state -> {
+                                findNavController().navigate(R.id.action_mapsFragment_to_signInFragment)
+                                it.state = DEFAULT.state
+                            }
+                        }
+
                     }
-                    is MapsState.ErrorState -> {
+                    is MapViewState.ErrorState -> {
                         showToastMessage(it.errorMessage)
+                        it.errorMessage = null
                     }
                     else -> {}
                 }

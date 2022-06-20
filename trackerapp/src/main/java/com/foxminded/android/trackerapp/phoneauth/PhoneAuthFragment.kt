@@ -9,13 +9,13 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.phoneauth.PhoneAuthViewModel
-import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.state.PhoneAuthButtonState
-import com.foxminded.android.locationtrackerkotlin.utils.StateConst.*
+import com.foxminded.android.locationtrackerkotlin.state.ViewState
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.*
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
-import com.foxminded.android.trackerapp.accountinfo.AccountInfoFragment
 import com.foxminded.android.trackerapp.databinding.FragmentPhoneAuthBinding
 import com.foxminded.android.trackerapp.di.config.App
 import javax.inject.Inject
@@ -78,15 +78,20 @@ class PhoneAuthFragment : BaseCommonFragment() {
                         when (it.state) {
                             SEND_SMS.state -> {
                                 showToastMessage(it.stringValue)
+                                it.stringValue = null
                             }
                             VERIFY_PHONE_WITH_CODE.state -> {
                                 showToastMessage(it.stringValue)
+                                it.stringValue = null
                             }
                             SIGN_IN_WITH_CREDENTIAL.state -> {
                                 displayAccountInfoFragment(it.stringValue)
+                                it.state = DEFAULT.state
+                                it.stringValue = null
                             }
                             RESEND_CODE.state -> {
                                 showToastMessage(it.stringValue)
+                                it.stringValue = null
                             }
                         }
                         hideProgressIndicator(progressBar)
@@ -173,10 +178,7 @@ class PhoneAuthFragment : BaseCommonFragment() {
     }
 
     private fun displayAccountInfoFragment(accountInfo: String?) {
-        displayFragment(AccountInfoFragment.newInstance(accountInfo))
-    }
-
-    companion object {
-        fun newInstance() = PhoneAuthFragment()
+        findNavController().navigate(PhoneAuthFragmentDirections
+            .actionPhoneAuthFragmentToAccountInfoFragment(accountInfo))
     }
 }

@@ -9,12 +9,13 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.signup.SignUpViewModel
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
-import com.foxminded.android.locationtrackerkotlin.utils.StateConst.SIGN_UP
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.SIGN_UP
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
-import com.foxminded.android.trackerviewer.accountinfo.AccountInfoFragment
+import com.foxminded.android.trackerviewer.R
 import com.foxminded.android.trackerviewer.databinding.FragmentSignUpBinding
 import com.foxminded.android.trackerviewer.di.config.App
 import javax.inject.Inject
@@ -74,9 +75,14 @@ class SignUpFragment : BaseCommonFragment() {
                             SIGN_UP.state -> {
                                 showToastMessage(it.stringValue)
                                 displayAccountInfo()
+                                it.state = null
+                                it.stringValue = null
                             }
                         }
                         hideProgressIndicator(progressBar)
+                        emailEditText.text.clear()
+                        passwordEditText.text.clear()
+                        passwordAgainEditText.text.clear()
                     }
                     is ViewState.LoadingState -> {
                         showProgressIndicator(progressBar)
@@ -84,6 +90,7 @@ class SignUpFragment : BaseCommonFragment() {
                     is ViewState.ErrorState -> {
                         showToastMessage(it.message)
                         hideProgressIndicator(progressBar)
+                        it.message = null
                     }
                     else -> {}
                 }
@@ -136,6 +143,6 @@ class SignUpFragment : BaseCommonFragment() {
     }
 
     private fun displayAccountInfo() {
-        displayFragment(AccountInfoFragment.newInstance(null))
+        findNavController().navigate(R.id.action_signUpFragment_to_accountInfoFragment)
     }
 }

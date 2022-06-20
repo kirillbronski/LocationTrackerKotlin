@@ -1,7 +1,8 @@
 package com.foxminded.android.trackerapp.utils
 
-const val TIME_DEBUG = 5000L
-const val DISTANCE_DEBUG = 10.0F
+private const val TIME_DEBUG = 5000L
+private const val DISTANCE_DEBUG = 10.0F
+private const val COLLECTION_NAME_DEBUG = "LocationTrackerDebug"
 
 class ConfigAppDebug : IConfigApp {
     override fun requestTime(): Long {
@@ -10,5 +11,9 @@ class ConfigAppDebug : IConfigApp {
 
     override fun requestDistance(): Float {
         return DISTANCE_DEBUG
+    }
+
+    override fun firestoreCollectionName(): String {
+        return COLLECTION_NAME_DEBUG
     }
 }

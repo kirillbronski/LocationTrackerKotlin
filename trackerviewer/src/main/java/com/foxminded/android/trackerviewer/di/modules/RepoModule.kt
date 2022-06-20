@@ -12,6 +12,7 @@ import com.foxminded.android.locationtrackerkotlin.signup.ISignUpRepo
 import com.foxminded.android.locationtrackerkotlin.signup.SignUpRepoImpl
 import com.foxminded.android.trackerviewer.maps.IMapsRepo
 import com.foxminded.android.trackerviewer.maps.MapsRepoImpl
+import com.foxminded.android.trackerviewer.utils.IConfigApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
@@ -44,8 +45,9 @@ class RepoModule {
     fun provideMapsRepo(
         firebaseFirestore: FirebaseFirestore,
         firebaseAuth: FirebaseAuth,
+        configApp: IConfigApp,
     ): IMapsRepo {
-        return MapsRepoImpl(firebaseFirestore, firebaseAuth)
+        return MapsRepoImpl(firebaseFirestore, firebaseAuth, configApp)
     }
 
     @Provides

@@ -13,7 +13,6 @@ import com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 private const val TIMEOUT = 60L

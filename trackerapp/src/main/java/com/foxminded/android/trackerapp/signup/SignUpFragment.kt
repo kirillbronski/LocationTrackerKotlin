@@ -9,12 +9,14 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.signup.SignUpViewModel
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
-import com.foxminded.android.locationtrackerkotlin.utils.StateConst
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.DEFAULT
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.SIGN_UP
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
-import com.foxminded.android.trackerapp.accountinfo.AccountInfoFragment
+import com.foxminded.android.trackerapp.R
 import com.foxminded.android.trackerapp.databinding.FragmentSignUpBinding
 import com.foxminded.android.trackerapp.di.config.App
 import javax.inject.Inject
@@ -31,10 +33,6 @@ class SignUpFragment : BaseCommonFragment() {
 
     @Inject
     lateinit var viewModel: SignUpViewModel
-
-    companion object {
-        fun newInstance() = SignUpFragment()
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -71,12 +69,17 @@ class SignUpFragment : BaseCommonFragment() {
                 when (it) {
                     is ViewState.SuccessState -> {
                         when (it.state) {
-                            StateConst.SIGN_UP.state -> {
+                            SIGN_UP.state -> {
                                 showToastMessage(it.stringValue)
                                 displayAccountInfo()
+                                it.state = DEFAULT.state
+                                it.stringValue = null
                             }
                         }
                         hideProgressIndicator(progressBar)
+                        emailEditText.text.clear()
+                        passwordEditText.text.clear()
+                        passwordAgainEditText.text.clear()
                     }
                     is ViewState.LoadingState -> {
                         showProgressIndicator(progressBar)
@@ -84,6 +87,7 @@ class SignUpFragment : BaseCommonFragment() {
                     is ViewState.ErrorState -> {
                         showToastMessage(it.message)
                         hideProgressIndicator(progressBar)
+                        it.message = null
                     }
                     else -> {}
                 }
@@ -136,6 +140,6 @@ class SignUpFragment : BaseCommonFragment() {
     }
 
     private fun displayAccountInfo() {
-        displayFragment(AccountInfoFragment.newInstance(null))
+        findNavController().navigate(R.id.action_signUpFragment_to_accountInfoFragment)
     }
 }

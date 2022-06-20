@@ -11,21 +11,22 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.foxminded.android.locationtrackerkotlin.accountinfo.AccountInfoViewModel
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
-import com.foxminded.android.locationtrackerkotlin.utils.StateConst.*
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.*
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
+import com.foxminded.android.trackerviewer.R
 import com.foxminded.android.trackerviewer.databinding.FragmentAccountInfoBinding
 import com.foxminded.android.trackerviewer.di.config.App
-import com.foxminded.android.trackerviewer.maps.MapsFragment
-import com.foxminded.android.trackerviewer.signin.SignInFragment
 import javax.inject.Inject
-
-private const val ACCOUNT_INFO = "ACCOUNT_INFO"
 
 class AccountInfoFragment : BaseCommonFragment() {
 
     private val TAG = AccountInfoFragment::class.java.simpleName
+
+    private val args: AccountInfoFragmentArgs by navArgs()
 
     private lateinit var binding: FragmentAccountInfoBinding
     private lateinit var progressBar: ConstraintLayout
@@ -35,15 +36,6 @@ class AccountInfoFragment : BaseCommonFragment() {
 
     @Inject
     lateinit var viewModel: AccountInfoViewModel
-
-    companion object {
-        fun newInstance(accountInfo: String?) =
-            AccountInfoFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ACCOUNT_INFO, accountInfo)
-                }
-            }
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -74,30 +66,32 @@ class AccountInfoFragment : BaseCommonFragment() {
             viewModel.signOut()
         }
 
-        checkViewState()
+        checkViewState(args.account)
     }
 
     @SuppressLint("SetTextI18n")
-    private fun checkViewState() {
-        val accountInfo = arguments?.get(ACCOUNT_INFO)
-        Log.d(TAG, "checkViewState: $accountInfo")
+    private fun checkViewState(account: String?) {
+        Log.d(TAG, "checkViewState: $account")
         lifecycleScope.launchWhenStarted {
             viewModel.viewState.collect {
                 when (it) {
                     is ViewState.SuccessState -> {
                         when (it.state) {
                             ACCOUNT.state -> {
-                                if (accountInfo != null) {
-                                    yourAccountTextView.text = "Your account: $accountInfo"
+                                if (account != "default") {
+                                    yourAccountTextView.text = "Your account: $account"
                                     continueButton.isEnabled = true
+                                    it.state = DEFAULT.state
                                 } else {
                                     yourAccountTextView.text = "Your account: " + it.stringValue
                                     continueButton.isEnabled = true
+                                    it.state = DEFAULT.state
                                 }
                             }
                             SIGN_OUT.state -> {
                                 displaySignInFragment()
                                 Log.d(TAG, "checkViewState: SIGN_OUT")
+                                it.state = DEFAULT.state
                                 it.state = DEFAULT.state
                             }
                         }
@@ -105,6 +99,7 @@ class AccountInfoFragment : BaseCommonFragment() {
                     is ViewState.ErrorState -> {
                         showToastMessage(it.message)
                         displaySignInFragment()
+                        it.message = null
                     }
                     else -> {}
                 }
@@ -120,10 +115,10 @@ class AccountInfoFragment : BaseCommonFragment() {
     }
 
     private fun displayMapsFragment() {
-        displayFragment(MapsFragment.newInstance())
+        findNavController().navigate(R.id.action_accountInfoFragment_to_mapsFragment)
     }
 
     private fun displaySignInFragment() {
-        displayFragment(SignInFragment.newInstance())
+        findNavController().navigate(R.id.action_accountInfoFragment_to_signInFragment)
     }
 }

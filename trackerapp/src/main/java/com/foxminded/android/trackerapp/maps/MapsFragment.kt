@@ -16,32 +16,25 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.foxminded.android.locationtrackerkotlin.state.MapViewState
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
-import com.foxminded.android.locationtrackerkotlin.state.MapsState
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.DEFAULT
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.SIGN_OUT
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
 import com.foxminded.android.trackerapp.R
 import com.foxminded.android.trackerapp.databinding.FragmentMapsBinding
 import com.foxminded.android.trackerapp.di.config.App
-import com.foxminded.android.trackerapp.signin.SignInFragment
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import javax.inject.Inject
 
-private const val ACCOUNT_INFO = "ACCOUNT_INFO"
-
 class MapsFragment : BaseCommonFragment() {
 
-    companion object {
-        fun newInstance(accountInfo: String?) =
-            MapsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ACCOUNT_INFO, accountInfo)
-                }
-            }
-    }
-
     private val TAG = MapsFragment::class.java.simpleName
+    private val args: MapsFragmentArgs by navArgs()
     private lateinit var binding: FragmentMapsBinding
 
     @Inject
@@ -73,12 +66,12 @@ class MapsFragment : BaseCommonFragment() {
     ): View {
         setHasOptionsMenu(true)
         binding = FragmentMapsBinding.inflate(inflater, container, false)
-        viewModel.getValueFromBundle(arguments?.get(ACCOUNT_INFO) as String?)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.requestAccountInfo(args.account)
         permissionsRequestLauncher.launch(arrayOf(ACCESS_FINE_LOCATION, WRITE_EXTERNAL_STORAGE))
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
@@ -86,7 +79,6 @@ class MapsFragment : BaseCommonFragment() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume")
         isMapsEnabled()
     }
 
@@ -107,10 +99,16 @@ class MapsFragment : BaseCommonFragment() {
             viewModel.mapsState.collect {
                 when (it) {
                     is ViewState.SuccessState -> {
-                        displayFragment(SignInFragment.newInstance())
+                        when (it.state) {
+                            SIGN_OUT.state -> {
+                                findNavController().navigate(R.id.action_mapsFragment_to_signInFragment)
+                                it.state = DEFAULT.state
+                            }
+                        }
                     }
                     is ViewState.ErrorState -> {
                         showToastMessage(it.message)
+                        it.message = null
                     }
                     else -> {}
                 }
@@ -122,7 +120,7 @@ class MapsFragment : BaseCommonFragment() {
         lifecycleScope.launchWhenStarted {
             viewModel.mapsLocationState.collect {
                 when (it) {
-                    is MapsState.StateLocationListener -> {
+                    is MapViewState.ViewStateLocationListener -> {
                         showToastMessage(it.message)
                     }
                     else -> {}

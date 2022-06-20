@@ -16,17 +16,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/account_info_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="@string/account_text_view"
-        android:textSize="@dimen/heading_text_size"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progress_bar_id" />
-
-    <TextView
         android:id="@+id/your_account_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,7 +27,7 @@
         app:layout_constraintBottom_toTopOf="@id/continue_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/account_info_text_view"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_id"
         tools:text="Your account: " />
 
     <com.google.android.material.button.MaterialButton
@@ -50,6 +39,7 @@
         android:enabled="false"
         android:padding="@dimen/button_padding"
         android:text="@string/continue_text_button"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toTopOf="@id/logout_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -62,6 +52,7 @@
         android:layout_margin="@dimen/button_margin"
         android:padding="@dimen/button_padding"
         android:text="@string/logout_text_button"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

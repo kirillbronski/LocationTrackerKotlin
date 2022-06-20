@@ -10,17 +10,15 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.signin.SignInViewModel
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
-import com.foxminded.android.locationtrackerkotlin.utils.StateConst.*
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.*
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
-import com.foxminded.android.trackerapp.accountinfo.AccountInfoFragment
+import com.foxminded.android.trackerapp.R
 import com.foxminded.android.trackerapp.databinding.FragmentSignInBinding
 import com.foxminded.android.trackerapp.di.config.App
-import com.foxminded.android.trackerapp.forgotpassword.ForgotPasswordFragment
-import com.foxminded.android.trackerapp.phoneauth.PhoneAuthFragment
-import com.foxminded.android.trackerapp.signup.SignUpFragment
 import javax.inject.Inject
 
 class SignInFragment : BaseCommonFragment() {
@@ -34,10 +32,6 @@ class SignInFragment : BaseCommonFragment() {
 
     @Inject
     lateinit var viewModel: SignInViewModel
-
-    companion object {
-        fun newInstance() = SignInFragment()
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -82,6 +76,7 @@ class SignInFragment : BaseCommonFragment() {
                                 showToastMessage(it.stringValue)
                                 displayAccountInfoFragment()
                                 it.state = DEFAULT.state
+                                it.stringValue = null
                             }
                             ACCOUNT.state -> {
                                 displayAccountInfoFragment()
@@ -89,6 +84,8 @@ class SignInFragment : BaseCommonFragment() {
                             }
                         }
                         hideProgressIndicator(progressBar)
+                        emailEditText.text.clear()
+                        passwordEditText.text.clear()
                     }
                     is ViewState.LoadingState -> {
                         showProgressIndicator(progressBar)
@@ -96,6 +93,7 @@ class SignInFragment : BaseCommonFragment() {
                     is ViewState.ErrorState -> {
                         showToastMessage(it.message)
                         hideProgressIndicator(progressBar)
+                        it.message = null
                     }
                     else -> {
                         Log.d(TAG, "checkViewState: BRANCH ELSE")
@@ -143,19 +141,18 @@ class SignInFragment : BaseCommonFragment() {
     }
 
     private fun displayPhoneAuthFragment() {
-        displayFragment(PhoneAuthFragment.newInstance())
+        findNavController().navigate(R.id.action_signInFragment_to_phoneAuthFragment)
     }
 
     private fun displayForgotPasswordFragment() {
-        displayFragment(ForgotPasswordFragment.newInstance())
+        findNavController().navigate(R.id.action_signInFragment_to_forgotPasswordFragment)
     }
 
     private fun displayAccountInfoFragment() {
-        displayFragment(AccountInfoFragment.newInstance(null))
+        findNavController().navigate(R.id.action_signInFragment_to_accountInfoFragment)
     }
 
     private fun displaySignUpFragment() {
-        displayFragment(SignUpFragment.newInstance())
+        findNavController().navigate(R.id.action_signInFragment_to_signUpFragment)
     }
-
 }
