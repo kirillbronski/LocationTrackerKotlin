@@ -7,11 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidPhone
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidSmsCode
-import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.state.PhoneAuthButtonState
+import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.foxminded.android.locationtrackerkotlin.utils.PhoneAuthResult
-import com.foxminded.android.locationtrackerkotlin.utils.StateConst.*
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.*
 import com.google.firebase.auth.PhoneAuthCredential
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

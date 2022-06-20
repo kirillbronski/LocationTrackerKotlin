@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidEmail
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
-import com.foxminded.android.locationtrackerkotlin.utils.StateConst.FORGOT_PASSWORD
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.FORGOT_PASSWORD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

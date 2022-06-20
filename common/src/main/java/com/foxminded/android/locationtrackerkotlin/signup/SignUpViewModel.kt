@@ -7,7 +7,7 @@ import com.foxminded.android.locationtrackerkotlin.extensions.isValidEmail
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidPassword
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
-import com.foxminded.android.locationtrackerkotlin.utils.StateConst.SIGN_UP
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.SIGN_UP
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +21,7 @@ class SignUpViewModel(
     private val TAG = SignUpViewModel::class.java.simpleName
 
     private val _viewState = MutableStateFlow<ViewState>(ViewState.DefaultState)
-    val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
+    val viewState: StateFlow<ViewState?> = _viewState.asStateFlow()
 
     private val _buttonState = MutableStateFlow(false)
     val buttonState: StateFlow<Boolean> = _buttonState.asStateFlow()

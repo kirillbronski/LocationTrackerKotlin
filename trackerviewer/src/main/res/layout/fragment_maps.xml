@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:textSize="@dimen/chip_text_size"
         android:visibility="gone"
-        app:chipBackgroundColor="@color/purple_200"
+        app:chipBackgroundColor="@color/primaryColorV"
         app:closeIconEnabled="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

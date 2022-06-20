@@ -6,8 +6,8 @@ import com.foxminded.android.locationtrackerkotlin.extensions.isValidEmail
 import com.foxminded.android.locationtrackerkotlin.extensions.isValidPassword
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
-import com.foxminded.android.locationtrackerkotlin.utils.StateConst.ACCOUNT
-import com.foxminded.android.locationtrackerkotlin.utils.StateConst.SIGN_IN
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.ACCOUNT
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.SIGN_IN
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

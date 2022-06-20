@@ -13,4 +13,10 @@
         <item name="android:statusBarColor">@color/primaryDarkColorV</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="Theme.LocationTrackerKotlin.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/black</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_alt_24_1</item>
+        <item name="postSplashScreenTheme">@style/Theme.LocationTrackerKotlin</item>
+    </style>
 </resources>

@@ -9,10 +9,12 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.forgotpassword.ForgotPasswordViewModel
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
-import com.foxminded.android.locationtrackerkotlin.utils.StateConst.FORGOT_PASSWORD
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.DEFAULT
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.FORGOT_PASSWORD
 import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
 import com.foxminded.android.trackerapp.databinding.FragmentForgotPasswordBinding
 import com.foxminded.android.trackerapp.di.config.App
@@ -27,10 +29,6 @@ class ForgotPasswordFragment : BaseCommonFragment() {
 
     @Inject
     lateinit var viewModel: ForgotPasswordViewModel
-
-    companion object {
-        fun newInstance() = ForgotPasswordFragment()
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -65,14 +63,17 @@ class ForgotPasswordFragment : BaseCommonFragment() {
                         when (it.state) {
                             FORGOT_PASSWORD.state -> {
                                 showToastMessage(it.stringValue)
+                                findNavController().popBackStack()
                                 emailEditText.text.clear()
-                                requireActivity().onBackPressed()
+                                it.stringValue = null
+                                it.state = DEFAULT.state
                             }
                         }
                         hideProgressIndicator(progressBar)
                     }
                     is ViewState.ErrorState -> {
                         showToastMessage(it.message)
+                        it.message = null
                     }
                     is ViewState.LoadingState -> {
                         showProgressIndicator(progressBar)

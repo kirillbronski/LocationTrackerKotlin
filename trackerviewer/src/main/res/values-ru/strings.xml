@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="all_permission_granted">Разрешения предоставлены</string>
+    <string name="permission_denied">Разрешения не предоставлены</string>
+    <string name="permission_denied_forever_message">"Вы навсегда отказались пердоставить разрешения.
+        Вы можете изменить свое решение в настройках приложения.\n\nВы хотите открыть настройки приложения?"</string>
+    <string name="requires_gps">Для корректной работы приложения необходимо включить GPS. Вы хотите включить определение местоположения? </string>
+    <string name="app_is_closed_menu">Приложение закрыто</string>
+</resources>

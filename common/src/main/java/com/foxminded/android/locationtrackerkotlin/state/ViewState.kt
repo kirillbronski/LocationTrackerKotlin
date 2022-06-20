@@ -4,8 +4,8 @@ sealed class ViewState {
     object DefaultState : ViewState()
     object LoadingState : ViewState()
     class SuccessState(
-        var state: Int?,
-        val stringValue: String?,
+        var state: String?,
+        var stringValue: String?,
     ) : ViewState()
 
     class ErrorState(var message: String?) : ViewState()

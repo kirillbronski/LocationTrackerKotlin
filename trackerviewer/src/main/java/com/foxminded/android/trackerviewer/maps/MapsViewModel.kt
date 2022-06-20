@@ -3,8 +3,9 @@ package com.foxminded.android.trackerviewer.maps
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxminded.android.locationtrackerkotlin.extensions.buildMarker
-import com.foxminded.android.locationtrackerkotlin.state.MapsState
+import com.foxminded.android.locationtrackerkotlin.state.MapViewState
 import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.SIGN_OUT
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,8 +18,8 @@ class MapsViewModel(
 ) : ViewModel() {
 
     private val TAG = MapsViewModel::class.java.simpleName
-    private val _mapsState = MutableStateFlow<MapsState>(MapsState.DefaultState)
-    val mapsState: StateFlow<MapsState> = _mapsState.asStateFlow()
+    private val _mapViewState = MutableStateFlow<MapViewState>(MapViewState.DefaultState)
+    val mapViewState: StateFlow<MapViewState> = _mapViewState.asStateFlow()
 
     init {
         getDataFromFirestore(null)
@@ -32,7 +33,7 @@ class MapsViewModel(
                     markers.add(buildMarker(it))
                 }
             }
-            _mapsState.value = MapsState.MarkerState(markers)
+            _mapViewState.value = MapViewState.MarkerViewState(markers)
         }
     }
 
@@ -41,10 +42,10 @@ class MapsViewModel(
             mapsRepoImpl.signOut().run {
                 when (this) {
                     is BaseResult.Success -> {
-                        _mapsState.value = MapsState.SuccessState
+                        _mapViewState.value = MapViewState.SuccessState(SIGN_OUT.state)
                     }
                     is BaseResult.Error -> {
-                        _mapsState.value = MapsState.ErrorState(this.errorMessage)
+                        _mapViewState.value = MapViewState.ErrorState(this.errorMessage)
                     }
                 }
             }

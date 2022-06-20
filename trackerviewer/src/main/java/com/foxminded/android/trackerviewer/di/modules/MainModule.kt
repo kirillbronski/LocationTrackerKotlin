@@ -1,7 +1,11 @@
 package com.foxminded.android.trackerviewer.di.modules
 
 import androidx.lifecycle.ViewModel
+import com.foxminded.android.locationtrackerkotlin.BuildConfig
 import com.foxminded.android.trackerviewer.factory.ViewModelFactory
+import com.foxminded.android.trackerviewer.utils.ConfigAppDebug
+import com.foxminded.android.trackerviewer.utils.ConfigAppRelease
+import com.foxminded.android.trackerviewer.utils.IConfigApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
@@ -11,6 +15,16 @@ import javax.inject.Singleton
 
 @Module
 class MainModule() {
+
+    @Provides
+    @Singleton
+    fun provideConfigApp(): IConfigApp {
+        return if (BuildConfig.DEBUG) {
+            ConfigAppDebug()
+        } else {
+            ConfigAppRelease()
+        }
+    }
 
     @Provides
     @Singleton

@@ -3,8 +3,8 @@ package com.foxminded.android.locationtrackerkotlin.accountinfo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
-import com.foxminded.android.locationtrackerkotlin.utils.StateConst.ACCOUNT
-import com.foxminded.android.locationtrackerkotlin.utils.StateConst.SIGN_OUT
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.ACCOUNT
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.SIGN_OUT
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

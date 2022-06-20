@@ -12,10 +12,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
+import com.foxminded.android.locationtrackerkotlin.state.MapViewState
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
-import com.foxminded.android.locationtrackerkotlin.state.MapsState
 import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
-import com.foxminded.android.locationtrackerkotlin.utils.StateConst.SIGN_OUT
+import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.SIGN_OUT
 import com.foxminded.android.trackerapp.utils.DateConvert
 import com.foxminded.android.trackerapp.utils.IConfigApp
 import kotlinx.coroutines.Dispatchers
@@ -37,13 +37,13 @@ class MapsViewModel(
     private val TAG = MapsViewModel::class.java.simpleName
     private val _mapsState = MutableStateFlow<ViewState>(ViewState.DefaultState)
     val mapsState: StateFlow<ViewState> = _mapsState.asStateFlow()
-    private val _mapsLocationState = MutableStateFlow<MapsState>(MapsState.DefaultState)
-    val mapsLocationState: StateFlow<MapsState> = _mapsLocationState.asStateFlow()
+    private val _mapsLocationState = MutableStateFlow<MapViewState>(MapViewState.DefaultState)
+    val mapsLocationState: StateFlow<MapViewState> = _mapsLocationState.asStateFlow()
 
     private lateinit var accountInfoFromServer: String
     private var accountInfoFromBundle: String? = null
 
-    fun getValueFromBundle(accountInfoFromBundle: String?): String? {
+    fun requestAccountInfo(accountInfoFromBundle: String?): String? {
         return accountInfoFromBundle.also { this.accountInfoFromBundle = it }
     }
 
@@ -58,14 +58,16 @@ class MapsViewModel(
     private val locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
             if (isOnline()) {
-                if (accountInfoFromBundle != null) {
+                if (accountInfoFromBundle != "default") {
+                    Log.d(TAG, "onLocationChanged BUNDLE: $accountInfoFromBundle")
                     insertDataToFirestoreSilently(location, accountInfoFromBundle)
                 } else {
+                    Log.d(TAG, "onLocationChanged SERVER: $accountInfoFromServer")
                     insertDataToFirestoreSilently(location, accountInfoFromServer)
                 }
                 Log.d(TAG, "onLocationChanged: ONLINE")
             } else {
-                if (accountInfoFromBundle != null) {
+                if (accountInfoFromBundle != "default") {
                     insertDataToRoomTableSilently(location, accountInfoFromBundle)
                 } else {
                     insertDataToRoomTableSilently(location, accountInfoFromServer)
@@ -155,7 +157,8 @@ class MapsViewModel(
 
     fun stopUpdateGps() {
         locationManager.removeUpdates(locationListener)
-        _mapsLocationState.value = MapsState.StateLocationListener("Location listener was stopped")
+        _mapsLocationState.value =
+            MapViewState.ViewStateLocationListener("Location listener was stopped")
     }
 
     fun signOut() {
