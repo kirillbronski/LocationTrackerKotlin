@@ -1,6 +1,7 @@
 package com.foxminded.android.trackerviewer.maps
 
 import android.util.Log
+import com.foxminded.android.locationtrackerkotlin.base.BaseRepo
 import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
 import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.foxminded.android.trackerviewer.utils.IConfigApp
@@ -10,9 +11,9 @@ import kotlinx.coroutines.tasks.await
 
 class MapsRepoImpl(
     private val firebaseFirestore: FirebaseFirestore,
-    private val firebaseAuth: FirebaseAuth,
+    firebaseAuth: FirebaseAuth,
     private val configApp: IConfigApp,
-) : IMapsRepo {
+) : BaseRepo(firebaseAuth), IMapsRepo {
 
     private val TAG = MapsRepoImpl::class.java.simpleName
 
@@ -28,18 +29,5 @@ class MapsRepoImpl(
             Log.e(TAG, "getDataFromFirestore: $e")
             null
         }
-
-
     }
-
-    override suspend fun signOut(): BaseResult =
-        runCatching {
-            firebaseAuth.signOut()
-        }.fold(
-            onSuccess = {
-                BaseResult.Success(null)
-            },
-            onFailure = {
-                BaseResult.Error(it.message)
-            })
 }

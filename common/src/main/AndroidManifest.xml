@@ -6,10 +6,6 @@
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.LocationTrackerKotlin">
-        <activity
-            android:name=".CommonActivity"
-            android:exported="true" />
-    </application>
+        android:theme="@style/Theme.LocationTrackerKotlin"></application>
 
 </manifest>

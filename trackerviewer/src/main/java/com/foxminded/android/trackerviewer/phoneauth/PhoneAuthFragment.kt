@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
@@ -51,6 +52,7 @@ class PhoneAuthFragment : BaseCommonFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        replaceImageAndIconColor()
         startButton.setOnClickListener {
             viewModel.verifyPhoneNumber(requireActivity())
         }
@@ -166,6 +168,19 @@ class PhoneAuthFragment : BaseCommonFragment() {
                 viewModel.checkSmsCodeField(it)
             }
         }
+    }
+
+    private fun replaceImageAndIconColor() {
+        val drawable = ContextCompat.getDrawable(requireContext(),
+            com.foxminded.android.locationtrackerkotlin.R.drawable.ic_phone_viewer)
+        binding.phoneAuthCommon.phoneNumberEditText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            com.foxminded.android.locationtrackerkotlin.R.drawable.ic_baseline_local_phone_v,
+            0,
+            0,
+            0)
+        binding.phoneAuthCommon.smsCodeEditText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            com.foxminded.android.locationtrackerkotlin.R.drawable.ic_baseline_sms_24, 0, 0, 0)
+        binding.phoneAuthCommon.imageView.setImageDrawable(drawable)
     }
 
     private fun initBindingViews() {

@@ -14,80 +14,118 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="@dimen/image_width"
+        android:layout_height="@dimen/image_height"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_id"
+        app:srcCompat="@drawable/ic_person_tracker" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/email_input_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/input_layout_width"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/layout_margin"
-        app:counterMaxLength="30"
         app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/progress_bar_id">
+        app:layout_constraintTop_toBottomOf="@id/imageView">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/email_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autofillHints="creditCardNumber"
+            android:layout_height="@dimen/text_field_height"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/text_field_margin_bottom"
+            android:autofillHints="emailAddress"
+            android:drawableStart="@drawable/ic_email_tracker"
+            android:drawablePadding="@dimen/drawable_padding"
+            android:ems="10"
+            android:fontFamily="@font/poppins_medium"
             android:hint="@string/email_hint"
-            android:inputType="textEmailAddress" />
+            android:inputType="textEmailAddress"
+            android:maxLength="30"
+            android:textColorHint="@color/color_hint"
+            android:textSize="@dimen/text_size" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/password_input_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/input_layout_width"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/layout_margin"
-        app:counterMaxLength="30"
         app:endIconMode="password_toggle"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/email_input_layout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autofillHints="creditCardNumber"
+            android:layout_height="@dimen/text_field_height"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/text_field_margin_bottom"
+            android:autofillHints="password"
+            android:drawableStart="@drawable/ic__lock_tracker"
+            android:drawablePadding="@dimen/drawable_padding"
+            android:ems="10"
+            android:fontFamily="@font/poppins_medium"
             android:hint="@string/password_hint"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:maxLength="30"
+            android:textColorHint="@color/color_hint"
+            android:textSize="@dimen/text_size" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/password_again_input_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/input_layout_width"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/layout_margin"
-        app:counterMaxLength="30"
         app:endIconMode="password_toggle"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/password_input_layout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password_again_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/password_again_edit_text"
-            android:inputType="textPassword" />
+            android:layout_height="@dimen/text_field_height"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/text_field_margin_bottom"
+            android:autofillHints="Password again"
+            android:drawableStart="@drawable/ic__lock_tracker"
+            android:drawablePadding="@dimen/drawable_padding"
+            android:ems="10"
+            android:fontFamily="@font/poppins_medium"
+            android:hint="@string/password_again"
+            android:inputType="textPassword"
+            android:maxLength="30"
+            android:textColorHint="@color/color_hint"
+            android:textSize="@dimen/text_size" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/sign_up_button"
-        android:layout_width="@dimen/default_size_button"
+        android:layout_width="@dimen/button_width_new"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/button_margin"
+        android:background="@drawable/btn_bg"
         android:enabled="false"
+        android:fontFamily="@font/poppins_medium"
         android:padding="@dimen/button_padding"
         android:text="@string/sign_up_button"
         android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/password_again_input_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/password_again_input_layout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

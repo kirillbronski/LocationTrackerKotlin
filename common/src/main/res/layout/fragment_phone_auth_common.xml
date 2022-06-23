@@ -14,84 +14,118 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="@dimen/image_width"
+        android:layout_height="@dimen/image_height"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_id"
+        app:srcCompat="@drawable/ic_phone_tracker" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/phone_input_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/input_layout_width"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/layout_margin"
+        android:layout_marginTop="@dimen/layout_margin"
         app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/progress_bar_id">
+        app:layout_constraintTop_toBottomOf="@id/imageView">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/phone_number_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/text_field_margin_bottom"
+            android:autofillHints="emailAddress"
+            android:drawableStart="@drawable/ic_baseline_local_phone_t"
+            android:drawablePadding="@dimen/drawable_padding"
+            android:ems="10"
+            android:fontFamily="@font/poppins_medium"
             android:hint="@string/phone_number_edit_text"
             android:inputType="phone"
-            android:maxLength="13" />
+            android:maxLength="13"
+            android:textColorHint="@color/color_hint"
+            android:textSize="@dimen/text_size" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/verification_input_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/input_layout_width"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/layout_margin"
         app:endIconMode="password_toggle"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/phone_input_layout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/sms_code_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/text_field_margin_bottom"
+            android:autofillHints="emailAddress"
+            android:drawableStart="@drawable/ic__sms_tracker"
+            android:drawablePadding="@dimen/drawable_padding"
+            android:ems="10"
+            android:fontFamily="@font/poppins_medium"
             android:hint="@string/verification_code_edit_text"
             android:inputType="numberPassword"
-            android:maxLength="6" />
+            android:maxLength="6"
+            android:textColorHint="@color/color_hint"
+            android:textSize="@dimen/text_size" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/start_button"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/button_width_new"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/button_margin"
+        android:background="@drawable/btn_bg"
         android:enabled="false"
+        android:fontFamily="@font/poppins_medium"
         android:padding="@dimen/button_padding"
         android:text="@string/start_button_text"
         android:textAllCaps="false"
-        app:layout_constraintEnd_toStartOf="@id/verify_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/verification_input_layout" />
+        app:layout_constraintBottom_toTopOf="@id/verify_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/verify_button"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/button_width_new"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_margin="@dimen/button_margin"
+        android:background="@drawable/btn_bg"
         android:enabled="false"
+        android:fontFamily="@font/poppins_medium"
         android:padding="@dimen/button_padding"
         android:text="@string/verify_button_text"
         android:textAllCaps="false"
-        app:layout_constraintEnd_toStartOf="@id/resend_button"
-        app:layout_constraintStart_toEndOf="@id/start_button"
-        app:layout_constraintTop_toBottomOf="@id/verification_input_layout" />
+        app:layout_constraintBottom_toTopOf="@id/resend_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/resend_button"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/button_width_new"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="@dimen/button_margin"
+        android:background="@drawable/btn_bg"
         android:enabled="false"
+        android:fontFamily="@font/poppins_medium"
         android:padding="@dimen/button_padding"
         android:text="@string/resend_text_button"
         android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/verify_button"
-        app:layout_constraintTop_toBottomOf="@id/verification_input_layout" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

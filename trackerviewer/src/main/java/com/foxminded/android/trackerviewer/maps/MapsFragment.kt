@@ -164,12 +164,6 @@ class MapsFragment : BaseCommonFragment() {
         ).show()
     }
 
-    companion object {
-        fun newInstance(): MapsFragment {
-            return MapsFragment()
-        }
-    }
-
     private val permissionsRequestLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),
         ::onGotPermissionsResult

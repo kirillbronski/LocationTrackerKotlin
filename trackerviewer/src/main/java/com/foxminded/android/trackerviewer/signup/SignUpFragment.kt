@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
@@ -53,7 +54,7 @@ class SignUpFragment : BaseCommonFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        replaceImageAndIconColor()
         binding.signUpCommon.signUpButton.setOnClickListener {
             createAccount()
         }
@@ -132,6 +133,18 @@ class SignUpFragment : BaseCommonFragment() {
                 viewModel.checkAllFieldsValue(email1 = null, password1 = null, passwordAgain1 = it)
             }
         }
+    }
+
+    private fun replaceImageAndIconColor() {
+        val drawable = ContextCompat.getDrawable(requireContext(),
+            com.foxminded.android.locationtrackerkotlin.R.drawable.ic_person_viewer)
+        binding.signUpCommon.emailEditText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            com.foxminded.android.locationtrackerkotlin.R.drawable.ic_email_viewerr, 0, 0, 0)
+        binding.signUpCommon.passwordEditText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            com.foxminded.android.locationtrackerkotlin.R.drawable.ic__lock_viewer, 0, 0, 0)
+        binding.signUpCommon.passwordAgainEditText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            com.foxminded.android.locationtrackerkotlin.R.drawable.ic__lock_viewer, 0, 0, 0)
+        binding.signUpCommon.imageView.setImageDrawable(drawable)
     }
 
     private fun initBindingViews() {

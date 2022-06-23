@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
@@ -46,6 +47,7 @@ class ForgotPasswordFragment : BaseCommonFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        replaceImageAndIconColor()
         resetPasswordButton.setOnClickListener {
             viewModel.passwordReset()
         }
@@ -105,6 +107,14 @@ class ForgotPasswordFragment : BaseCommonFragment() {
                 viewModel.checkEmailField(emailFieldValue = it)
             }
         }
+    }
+
+    private fun replaceImageAndIconColor() {
+        val drawable = ContextCompat.getDrawable(requireContext(),
+            com.foxminded.android.locationtrackerkotlin.R.drawable.ic_lock_open_viewer)
+        binding.forgotPasswordCommon.emailResetPasswordEditText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            com.foxminded.android.locationtrackerkotlin.R.drawable.ic_email_viewerr, 0, 0, 0)
+        binding.forgotPasswordCommon.imageView.setImageDrawable(drawable)
     }
 
     private fun initBindingViews() {

@@ -1,7 +1,7 @@
 package com.foxminded.android.trackerviewer.di.modules
 
 import androidx.lifecycle.ViewModel
-import com.foxminded.android.locationtrackerkotlin.BuildConfig
+import com.foxminded.android.trackerviewer.BuildConfig
 import com.foxminded.android.trackerviewer.factory.ViewModelFactory
 import com.foxminded.android.trackerviewer.utils.ConfigAppDebug
 import com.foxminded.android.trackerviewer.utils.ConfigAppRelease

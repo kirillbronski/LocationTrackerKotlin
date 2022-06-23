@@ -9,14 +9,11 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
-import com.foxminded.android.locationtrackerkotlin.BuildConfig
+import com.foxminded.android.trackerapp.BuildConfig
 import com.foxminded.android.trackerapp.factory.ViewModelFactory
 import com.foxminded.android.trackerapp.room.AccountDao
 import com.foxminded.android.trackerapp.room.LocationDatabase
-import com.foxminded.android.trackerapp.utils.ConfigAppDebug
-import com.foxminded.android.trackerapp.utils.ConfigAppRelease
-import com.foxminded.android.trackerapp.utils.IConfigApp
-import com.foxminded.android.trackerapp.utils.SendData
+import com.foxminded.android.trackerapp.utils.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
@@ -37,6 +34,16 @@ class MainModule(
             ConfigAppDebug()
         } else {
             ConfigAppRelease()
+        }
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirestoreCollectionName(): IFirestoreCollectionName {
+        return if (BuildConfig.DEBUG) {
+            FirestoreCollectionNameDebug()
+        } else {
+            FirestoreCollectionNameRelease()
         }
     }
 

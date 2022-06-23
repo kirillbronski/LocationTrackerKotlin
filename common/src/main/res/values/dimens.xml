@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="hint_size">18sp</dimen>
+    <dimen name="hint_size">14sp</dimen>
     <dimen name="default_size_button">300dp</dimen>
-    <dimen name="button_padding">20dp</dimen>
-    <dimen name="button_margin">8dp</dimen>
+    <dimen name="button_padding">15dp</dimen>
+    <dimen name="button_margin">20dp</dimen>
     <dimen name="button_width">300dp</dimen>
     <dimen name="text_view_margin">8dp</dimen>
     <dimen name="layout_margin">8dp</dimen>
     <dimen name="heading_text_size">40sp</dimen>
+    <dimen name="image_width">200dp</dimen>
+    <dimen name="image_height">200dp</dimen>
+    <dimen name="input_layout_width">325dp</dimen>
+    <dimen name="text_size">15sp</dimen>
+    <dimen name="text_field_height">60dp</dimen>
+    <dimen name="text_field_margin_bottom">16dp</dimen>
+    <dimen name="drawable_padding">8dp</dimen>
+    <dimen name="button_width_new">200dp</dimen>
+    <dimen name="margin_bottom">8dp</dimen>
+    <dimen name="margin_end">55dp</dimen>
+    <dimen name="margin_start">8dp</dimen>
+    <dimen name="reset_password_button_margin">115dp</dimen>
 </resources>

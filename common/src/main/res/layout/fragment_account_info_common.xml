@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/account_info_common"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -15,28 +14,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/your_account_text_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="@dimen/layout_margin"
-        android:gravity="center_horizontal"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/continue_button"
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="@dimen/image_width"
+        android:layout_height="@dimen/image_height"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/progress_bar_id"
-        tools:text="Your account: " />
+        app:srcCompat="@drawable/ic_baseline_account" />
+
+    <TextView
+        android:id="@+id/your_account_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/layout_margin"
+        android:drawablePadding="8dp"
+        android:gravity="center_horizontal"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:drawableStartCompat="@drawable/ic_baseline_account_circle_tracker"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar_id" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/continue_button"
-        android:layout_width="@dimen/button_width"
+        android:layout_width="@dimen/button_width_new"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_margin="@dimen/button_margin"
+        android:background="@drawable/btn_bg"
         android:enabled="false"
+        android:fontFamily="@font/poppins_medium"
         android:padding="@dimen/button_padding"
         android:text="@string/continue_text_button"
         android:textAllCaps="false"
@@ -46,10 +56,11 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/logout_button"
-        android:layout_width="@dimen/button_width"
+        android:layout_width="@dimen/button_width_new"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_margin="@dimen/button_margin"
+        android:background="@drawable/btn_bg"
+        android:fontFamily="@font/poppins_medium"
         android:padding="@dimen/button_padding"
         android:text="@string/logout_text_button"
         android:textAllCaps="false"

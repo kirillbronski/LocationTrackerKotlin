@@ -1,13 +1,14 @@
 package com.foxminded.android.locationtrackerkotlin.signin
 
 import android.util.Log
+import com.foxminded.android.locationtrackerkotlin.base.BaseRepo
 import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await
 
 class SignInRepoImpl(
     private var firebaseAuth: FirebaseAuth,
-) : ISignInRepo {
+) : BaseRepo(firebaseAuth), ISignInRepo {
 
     private val TAG = SignInRepoImpl::class.java.simpleName
 
@@ -23,17 +24,4 @@ class SignInRepoImpl(
                 BaseResult.Error(it.message)
             }
         )
-
-    override suspend fun currentFirebaseUser(): String? {
-        if (firebaseAuth.currentUser != null) {
-            if (firebaseAuth.currentUser?.email != "") {
-                return firebaseAuth.currentUser?.email.toString()
-            } else if (firebaseAuth.currentUser?.phoneNumber != "") {
-                return firebaseAuth.currentUser?.phoneNumber.toString()
-            }
-            return "No User!"
-        } else {
-            return firebaseAuth.currentUser
-        }
-    }
 }

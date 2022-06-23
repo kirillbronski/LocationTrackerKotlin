@@ -58,7 +58,7 @@ class AccountInfoFragment : BaseCommonFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        replaceIconColor()
         continueButton.setOnClickListener {
             displayMapsFragment()
         }
@@ -79,11 +79,11 @@ class AccountInfoFragment : BaseCommonFragment() {
                         when (it.state) {
                             ACCOUNT.state -> {
                                 if (account != "default") {
-                                    yourAccountTextView.text = "Your account: $account"
+                                    yourAccountTextView.text = account
                                     continueButton.isEnabled = true
                                     it.state = DEFAULT.state
                                 } else {
-                                    yourAccountTextView.text = "Your account: " + it.stringValue
+                                    yourAccountTextView.text = it.stringValue
                                     continueButton.isEnabled = true
                                     it.state = DEFAULT.state
                                 }
@@ -105,6 +105,14 @@ class AccountInfoFragment : BaseCommonFragment() {
                 }
             }
         }
+    }
+
+    private fun replaceIconColor() {
+        binding.accountInfoCommon.yourAccountTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            com.foxminded.android.locationtrackerkotlin.R.drawable.ic_baseline_account_circle_viewer,
+            0,
+            0,
+            0)
     }
 
     private fun initBindingViews() {

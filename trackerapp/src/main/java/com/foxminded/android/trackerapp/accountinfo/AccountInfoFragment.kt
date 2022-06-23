@@ -78,11 +78,11 @@ class AccountInfoFragment : BaseCommonFragment() {
                         when (it.state) {
                             ACCOUNT.state -> {
                                 if (account != "default") {
-                                    yourAccountTextView.text = "Your account: $account"
+                                    yourAccountTextView.text = account
                                     continueButton.isEnabled = true
                                     it.state = DEFAULT.state
                                 } else {
-                                    yourAccountTextView.text = "Your account: " + it.stringValue
+                                    yourAccountTextView.text = it.stringValue
                                     continueButton.isEnabled = true
                                     it.state = DEFAULT.state
                                 }

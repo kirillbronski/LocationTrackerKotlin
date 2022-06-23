@@ -1,8 +1,10 @@
 package com.foxminded.android.locationtrackerkotlin.accountinfo
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
+import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.ACCOUNT
 import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.SIGN_OUT
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +16,8 @@ import kotlinx.coroutines.launch
 class AccountInfoViewModel(
     private val accountInfoRepoImpl: IAccountInfoRepo,
 ) : ViewModel() {
+
+    private val TAG = AccountInfoViewModel::class.java.simpleName
 
     private val _viewState = MutableStateFlow<ViewState>(ViewState.DefaultState)
     val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
@@ -32,11 +36,17 @@ class AccountInfoViewModel(
     }
 
     fun signOut() {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (accountInfoRepoImpl.signOut()) {
-                _viewState.value =
-                    ViewState.SuccessState(state = SIGN_OUT.state,
-                        stringValue = "Sign Out Success")
+        viewModelScope.launch {
+            accountInfoRepoImpl.signOut().run {
+                when (this) {
+                    is BaseResult.Success -> {
+                        _viewState.value = ViewState.SuccessState(SIGN_OUT.state, "Sign out!")
+                    }
+                    is BaseResult.Error -> {
+                        Log.d(TAG, "signOut() returned: ${this.errorMessage}")
+                        _viewState.value = ViewState.ErrorState(this.errorMessage)
+                    }
+                }
             }
         }
     }

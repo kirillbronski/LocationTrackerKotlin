@@ -15,7 +15,7 @@ import com.foxminded.android.trackerapp.maps.IMapsRepoFirestore
 import com.foxminded.android.trackerapp.maps.MapsRepoFirestoreImpl
 import com.foxminded.android.trackerapp.maps.MapsRepoImpl
 import com.foxminded.android.trackerapp.room.AccountDao
-import com.foxminded.android.trackerapp.utils.IConfigApp
+import com.foxminded.android.trackerapp.utils.IFirestoreCollectionName
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
@@ -48,9 +48,9 @@ class RepoModule {
     fun provideMapsRepoFirestore(
         database: FirebaseFirestore,
         firebaseAuth: FirebaseAuth,
-        configApp: IConfigApp,
+        firestoreCollectionName: IFirestoreCollectionName,
     ): IMapsRepoFirestore {
-        return MapsRepoFirestoreImpl(database, firebaseAuth, configApp)
+        return MapsRepoFirestoreImpl(database, firebaseAuth, firestoreCollectionName)
     }
 
     @Provides

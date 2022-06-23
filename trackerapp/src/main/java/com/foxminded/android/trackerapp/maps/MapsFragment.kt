@@ -41,7 +41,7 @@ class MapsFragment : BaseCommonFragment() {
     lateinit var viewModel: MapsViewModel
 
     private val enableGpsSettings =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ -> }
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
     private val permissionsRequestLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),

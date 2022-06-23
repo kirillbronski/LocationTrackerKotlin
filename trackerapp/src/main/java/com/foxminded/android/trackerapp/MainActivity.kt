@@ -1,7 +1,6 @@
 package com.foxminded.android.trackerapp
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
@@ -16,7 +15,6 @@ class MainActivity : AppCompatActivity() {
         installSplashScreen()
         setContentView(R.layout.activity_main)
         settingsActionBar()
-        Log.d(TAG, BuildConfig.TYPE)
     }
 
     private fun settingsActionBar() {

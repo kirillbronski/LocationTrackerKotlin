@@ -1,8 +1,6 @@
 package com.foxminded.android.locationtrackerkotlin.accountinfo
 
-interface IAccountInfoRepo {
+import com.foxminded.android.locationtrackerkotlin.base.IBaseRepo
 
-    suspend fun currentFirebaseUser(): String?
-
-    suspend fun signOut(): Boolean
+interface IAccountInfoRepo : IBaseRepo {
 }

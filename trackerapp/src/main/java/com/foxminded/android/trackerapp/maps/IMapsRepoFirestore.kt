@@ -1,14 +1,10 @@
 package com.foxminded.android.trackerapp.maps
 
+import com.foxminded.android.locationtrackerkotlin.base.IBaseRepo
 import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
-import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 
-interface IMapsRepoFirestore {
+interface IMapsRepoFirestore : IBaseRepo {
 
     suspend fun insertDataToFirestore(user: User)
-
-    suspend fun currentFirebaseUser(): String?
-
-    suspend fun signOut(): BaseResult
 
 }

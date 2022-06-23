@@ -24,18 +24,34 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            versionNameSuffix " - release"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "TYPE", '"RELEASE"'
         }
         debug {
             versionNameSuffix " - debug"
-            buildConfigField "String", "TYPE", '"DEBUG"'
         }
     }
+
+    flavorDimensions 'version'
+    productFlavors {
+        hhru {
+            dimension 'version'
+            versionNameSuffix '.hhru'
+        }
+        strlnk {
+            dimension 'version'
+            versionNameSuffix '.strlnk'
+        }
+        foxminded {
+            dimension 'version'
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }
@@ -50,15 +66,15 @@ dependencies {
     implementation 'androidx.core:core-splashscreen:1.0.0-rc01'
 
     // Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.1"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.3'
 
     // Dagger2
-    implementation 'com.google.dagger:dagger:2.41'
+    implementation 'com.google.dagger:dagger:2.42'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
-    kapt 'com.google.dagger:dagger-compiler:2.41'
+    kapt 'com.google.dagger:dagger-compiler:2.42'
 
     // Maps
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
