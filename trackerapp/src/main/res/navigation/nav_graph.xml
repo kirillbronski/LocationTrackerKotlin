@@ -5,6 +5,11 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/signInFragment">
 
+    <action
+        android:id="@+id/action_global_map_fragment"
+        app:destination="@+id/mapsFragment"
+        app:launchSingleTop="true" />
+
     <fragment
         android:id="@+id/signInFragment"
         android:name="com.foxminded.android.trackerapp.signin.SignInFragment"

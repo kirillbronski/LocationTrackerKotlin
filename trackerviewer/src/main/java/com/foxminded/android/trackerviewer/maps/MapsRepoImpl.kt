@@ -3,7 +3,6 @@ package com.foxminded.android.trackerviewer.maps
 import android.util.Log
 import com.foxminded.android.locationtrackerkotlin.base.BaseRepo
 import com.foxminded.android.locationtrackerkotlin.firestoreuser.User
-import com.foxminded.android.locationtrackerkotlin.utils.BaseResult
 import com.foxminded.android.trackerviewer.utils.IConfigApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore

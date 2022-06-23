@@ -42,8 +42,8 @@ class AccountInfoFragment : BaseCommonFragment() {
         (activity?.application as App).mainComponent.injectAccountInfoFragment(this)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
         viewModel.requestAccountInfo()
     }
 
@@ -108,7 +108,8 @@ class AccountInfoFragment : BaseCommonFragment() {
     }
 
     private fun replaceIconColor() {
-        binding.accountInfoCommon.yourAccountTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+        binding.accountInfoCommon.yourAccountTextView
+            .setCompoundDrawablesRelativeWithIntrinsicBounds(
             com.foxminded.android.locationtrackerkotlin.R.drawable.ic_baseline_account_circle_viewer,
             0,
             0,
