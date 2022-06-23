@@ -9,6 +9,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/refresh"
+        android:icon="@drawable/ic_baseline_refresh_24"
+        android:title="@string/calendar"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/sign_out_menu"
         android:title="@string/sign_out_menu"
         app:showAsAction="never" />

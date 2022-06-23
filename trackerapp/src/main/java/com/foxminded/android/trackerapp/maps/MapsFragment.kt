@@ -1,18 +1,13 @@
 package com.foxminded.android.trackerapp.maps
 
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
@@ -45,11 +40,6 @@ class MapsFragment : BaseCommonFragment() {
     private val enableGpsSettings =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
-    private val permissionsRequestLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions(),
-        ::onGotPermissionsResult
-    )
-
     private val callback = OnMapReadyCallback { map ->
         settingsMap(map)
         checkViewState()
@@ -74,7 +64,6 @@ class MapsFragment : BaseCommonFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.requestAccountInfo(args.account)
-        permissionsRequestLauncher.launch(arrayOf(ACCESS_FINE_LOCATION, WRITE_EXTERNAL_STORAGE))
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
         sendCommandToService(ACTION_START_OR_RESUME_SERVICE)
@@ -83,6 +72,7 @@ class MapsFragment : BaseCommonFragment() {
     override fun onResume() {
         super.onResume()
         isMapsEnabled()
+        viewModel.requestLocation()
     }
 
     @SuppressLint("MissingPermission")
@@ -156,41 +146,6 @@ class MapsFragment : BaseCommonFragment() {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun onGotPermissionsResult(grantResults: Map<String, Boolean>) {
-        if (grantResults.entries.all { it.value }) {
-            Toast.makeText(
-                requireContext(),
-                R.string.all_permission_granted,
-                Toast.LENGTH_SHORT
-            ).show()
-            viewModel.requestLocation()
-        } else {
-            askUserForOpenInAppSettings()
-        }
-    }
-
-    private fun askUserForOpenInAppSettings() {
-        val appSettingsIntent = Intent(
-            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-            Uri.fromParts("package", activity?.packageName?.toString(), null)
-        )
-
-        activity?.packageManager?.resolveActivity(
-            appSettingsIntent,
-            PackageManager.MATCH_DEFAULT_ONLY
-        )?.let {
-            AlertDialog.Builder(requireContext())
-                .setTitle(R.string.permission_denied)
-                .setMessage(R.string.permission_denied_forever_message)
-                .setCancelable(false)
-                .setPositiveButton("Open") { _, _ ->
-                    startActivity(appSettingsIntent)
-                }
-                .create()
-                .show()
-        }
     }
 
     private fun isMapsEnabled(): Boolean {

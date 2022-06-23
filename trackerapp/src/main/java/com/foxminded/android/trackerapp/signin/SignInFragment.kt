@@ -1,13 +1,21 @@
 package com.foxminded.android.trackerapp.signin
 
+import android.Manifest
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -33,6 +41,11 @@ class SignInFragment : BaseCommonFragment() {
     @Inject
     lateinit var viewModel: SignInViewModel
 
+    private val permissionsRequestLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions(),
+        ::onGotPermissionsResult
+    )
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (activity?.application as App).mainComponent.injectSignInFragment(this)
@@ -40,6 +53,8 @@ class SignInFragment : BaseCommonFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        permissionsRequestLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE))
         viewModel.requestAccountInfo()
     }
 
@@ -64,6 +79,40 @@ class SignInFragment : BaseCommonFragment() {
         checkTextFields()
         checkViewState()
         checkButtonState()
+    }
+
+    private fun onGotPermissionsResult(grantResults: Map<String, Boolean>) {
+        if (grantResults.entries.all { it.value }) {
+            Toast.makeText(
+                requireContext(),
+                R.string.all_permission_granted,
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            askUserForOpenInAppSettings()
+        }
+    }
+
+    private fun askUserForOpenInAppSettings() {
+        val appSettingsIntent = Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.fromParts("package", activity?.packageName?.toString(), null)
+        )
+
+        activity?.packageManager?.resolveActivity(
+            appSettingsIntent,
+            PackageManager.MATCH_DEFAULT_ONLY
+        )?.let {
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.permission_denied)
+                .setMessage(R.string.permission_denied_forever_message)
+                .setCancelable(false)
+                .setPositiveButton("Open") { _, _ ->
+                    startActivity(appSettingsIntent)
+                }
+                .create()
+                .show()
+        }
     }
 
     private fun checkViewState() {

@@ -1,14 +1,10 @@
 package com.foxminded.android.trackerviewer.maps
 
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -16,6 +12,7 @@ import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.foxminded.android.locationtrackerkotlin.state.MapViewState
@@ -69,7 +66,6 @@ class MapsFragment : BaseCommonFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        permissionsRequestLauncher.launch(arrayOf(ACCESS_FINE_LOCATION, WRITE_EXTERNAL_STORAGE))
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
     }
@@ -126,6 +122,11 @@ class MapsFragment : BaseCommonFragment() {
                 initCalendar()
                 return true
             }
+            R.id.refresh -> {
+                viewModel.getDataFromFirestore(null)
+                binding.chipMap.isVisible = false
+                return true
+            }
             R.id.sign_out_menu -> {
                 viewModel.signOut()
                 return true
@@ -162,45 +163,6 @@ class MapsFragment : BaseCommonFragment() {
             getString(R.string.app_is_closed_menu),
             Toast.LENGTH_SHORT
         ).show()
-    }
-
-    private val permissionsRequestLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions(),
-        ::onGotPermissionsResult
-    )
-
-    private fun onGotPermissionsResult(grantResults: Map<String, Boolean>) {
-        if (grantResults.entries.all { it.value }) {
-            Toast.makeText(
-                requireContext(),
-                R.string.all_permission_granted,
-                Toast.LENGTH_SHORT
-            ).show()
-        } else {
-            askUserForOpenInAppSettings()
-        }
-    }
-
-    private fun askUserForOpenInAppSettings() {
-        val appSettingsIntent = Intent(
-            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-            Uri.fromParts("package", activity?.packageName?.toString(), null)
-        )
-
-        activity?.packageManager?.resolveActivity(
-            appSettingsIntent,
-            PackageManager.MATCH_DEFAULT_ONLY
-        )?.let {
-            AlertDialog.Builder(requireContext())
-                .setTitle(R.string.permission_denied)
-                .setMessage(R.string.permission_denied_forever_message)
-                .setCancelable(false)
-                .setPositiveButton("Open") { _, _ ->
-                    startActivity(appSettingsIntent)
-                }
-                .create()
-                .show()
-        }
     }
 
     override fun onResume() {

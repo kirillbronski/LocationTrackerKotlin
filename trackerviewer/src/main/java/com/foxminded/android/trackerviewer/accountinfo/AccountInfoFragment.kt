@@ -110,10 +110,10 @@ class AccountInfoFragment : BaseCommonFragment() {
     private fun replaceIconColor() {
         binding.accountInfoCommon.yourAccountTextView
             .setCompoundDrawablesRelativeWithIntrinsicBounds(
-            com.foxminded.android.locationtrackerkotlin.R.drawable.ic_baseline_account_circle_viewer,
-            0,
-            0,
-            0)
+                com.foxminded.android.locationtrackerkotlin.R.drawable.ic_baseline_account_circle_viewer,
+                0,
+                0,
+                0)
     }
 
     private fun initBindingViews() {
