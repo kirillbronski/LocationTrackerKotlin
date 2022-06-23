@@ -26,6 +26,8 @@ import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
 import com.foxminded.android.trackerapp.R
 import com.foxminded.android.trackerapp.databinding.FragmentMapsBinding
 import com.foxminded.android.trackerapp.di.config.App
+import com.foxminded.android.trackerapp.services.TrackerService
+import com.foxminded.android.trackerapp.utils.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -75,6 +77,7 @@ class MapsFragment : BaseCommonFragment() {
         permissionsRequestLauncher.launch(arrayOf(ACCESS_FINE_LOCATION, WRITE_EXTERNAL_STORAGE))
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+        sendCommandToService(ACTION_START_OR_RESUME_SERVICE)
     }
 
     override fun onResume() {
@@ -93,6 +96,12 @@ class MapsFragment : BaseCommonFragment() {
         map.uiSettings.isZoomControlsEnabled = true
         map.uiSettings.setAllGesturesEnabled(true)
     }
+
+    private fun sendCommandToService(action: String) =
+        Intent(requireContext(), TrackerService::class.java).also {
+            it.action = action
+            requireContext().startService(it)
+        }
 
     private fun checkViewState() {
         lifecycleScope.launchWhenStarted {
@@ -136,18 +145,6 @@ class MapsFragment : BaseCommonFragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.stop_update_gps -> {
-                viewModel.stopUpdateGps()
-                return true
-            }
-            R.id.run_update_gps -> {
-                viewModel.requestLocation()
-                return true
-            }
-            R.id.delete_all_data -> {
-                viewModel.deleteAllDataFromTable()
-                return true
-            }
             R.id.sign_out_menu -> {
                 viewModel.signOut()
                 return true

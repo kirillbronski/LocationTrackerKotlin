@@ -42,8 +42,8 @@ class AccountInfoFragment : BaseCommonFragment() {
         (activity?.application as App).mainComponent.injectAccountInfoFragment(this)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
         viewModel.requestAccountInfo()
     }
 
