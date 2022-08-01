@@ -30,19 +30,19 @@ class SignUpViewModel(
     private var password = MutableStateFlow("")
     private var passwordAgain = MutableStateFlow("")
 
-    fun checkAllFieldsValue(email1: String?, password1: String?, passwordAgain1: String?) {
+    fun checkAllFieldsValue(email1: String = "", password1: String = "", passwordAgain1: String = "") {
         email1.also {
-            if (it != null) {
+            if (it != "") {
                 this.email.value = it
             }
         }
         password1.also {
-            if (it != null) {
+            if (it != "") {
                 this.password.value = it
             }
         }
         passwordAgain1.also {
-            if (it != null) {
+            if (it != "") {
                 this.passwordAgain.value = it
             }
         }

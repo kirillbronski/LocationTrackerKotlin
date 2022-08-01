@@ -2,9 +2,7 @@ package com.foxminded.android.trackerapp.phoneauth
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -15,15 +13,14 @@ import com.foxminded.android.locationtrackerkotlin.phoneauth.PhoneAuthViewModel
 import com.foxminded.android.locationtrackerkotlin.state.PhoneAuthButtonState
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.*
-import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
+import com.foxminded.android.locationtrackerkotlin.view.BaseFragment
 import com.foxminded.android.trackerapp.databinding.FragmentPhoneAuthBinding
 import com.foxminded.android.trackerapp.di.config.App
 import javax.inject.Inject
 
-class PhoneAuthFragment : BaseCommonFragment() {
+class PhoneAuthFragment : BaseFragment<FragmentPhoneAuthBinding>() {
 
     private val TAG = PhoneAuthFragment::class.java.simpleName
-    private lateinit var binding: FragmentPhoneAuthBinding
     private lateinit var progressBar: ConstraintLayout
     private lateinit var startButton: Button
     private lateinit var verifyButton: Button
@@ -39,17 +36,9 @@ class PhoneAuthFragment : BaseCommonFragment() {
         (activity?.application as App).mainComponent.injectPhoneAuthFragment(this)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        binding = FragmentPhoneAuthBinding.inflate(inflater, container, false)
-        initBindingViews()
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initBindingViews()
 
         startButton.setOnClickListener {
             viewModel.verifyPhoneNumber(requireActivity())
@@ -181,4 +170,6 @@ class PhoneAuthFragment : BaseCommonFragment() {
         findNavController().navigate(PhoneAuthFragmentDirections
             .actionPhoneAuthFragmentToAccountInfoFragment(accountInfo))
     }
+
+    override fun getViewBinding() = FragmentPhoneAuthBinding.inflate(layoutInflater)
 }
