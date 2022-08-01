@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -16,19 +14,18 @@ import androidx.navigation.fragment.navArgs
 import com.foxminded.android.locationtrackerkotlin.accountinfo.AccountInfoViewModel
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.*
-import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
+import com.foxminded.android.locationtrackerkotlin.view.BaseFragment
 import com.foxminded.android.trackerviewer.R
 import com.foxminded.android.trackerviewer.databinding.FragmentAccountInfoBinding
 import com.foxminded.android.trackerviewer.di.config.App
 import javax.inject.Inject
 
-class AccountInfoFragment : BaseCommonFragment() {
+class AccountInfoFragment : BaseFragment<FragmentAccountInfoBinding>() {
 
     private val TAG = AccountInfoFragment::class.java.simpleName
 
     private val args: AccountInfoFragmentArgs by navArgs()
 
-    private lateinit var binding: FragmentAccountInfoBinding
     private lateinit var progressBar: ConstraintLayout
     private lateinit var continueButton: Button
     private lateinit var logoutButton: Button
@@ -47,17 +44,9 @@ class AccountInfoFragment : BaseCommonFragment() {
         viewModel.requestAccountInfo()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        binding = FragmentAccountInfoBinding.inflate(inflater, container, false)
-        initBindingViews()
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initBindingViews()
         replaceIconColor()
         continueButton.setOnClickListener {
             displayMapsFragment()
@@ -130,4 +119,6 @@ class AccountInfoFragment : BaseCommonFragment() {
     private fun displaySignInFragment() {
         findNavController().navigate(R.id.action_accountInfoFragment_to_signInFragment)
     }
+
+    override fun getViewBinding() = FragmentAccountInfoBinding.inflate(layoutInflater)
 }

@@ -2,9 +2,7 @@ package com.foxminded.android.trackerviewer.forgotpassword
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -16,14 +14,13 @@ import com.foxminded.android.locationtrackerkotlin.forgotpassword.ForgotPassword
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.DEFAULT
 import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.FORGOT_PASSWORD
-import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
+import com.foxminded.android.locationtrackerkotlin.view.BaseFragment
 import com.foxminded.android.trackerviewer.databinding.FragmentForgotPasswordBinding
 import com.foxminded.android.trackerviewer.di.config.App
 import javax.inject.Inject
 
-class ForgotPasswordFragment : BaseCommonFragment() {
+class ForgotPasswordFragment : BaseFragment<FragmentForgotPasswordBinding>() {
 
-    private lateinit var binding: FragmentForgotPasswordBinding
     private lateinit var emailEditText: EditText
     private lateinit var resetPasswordButton: Button
     private lateinit var progressBar: ConstraintLayout
@@ -36,17 +33,9 @@ class ForgotPasswordFragment : BaseCommonFragment() {
         (activity?.application as App).mainComponent.injectForgotPasswordFragment(this)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        binding = FragmentForgotPasswordBinding.inflate(inflater, container, false)
-        initBindingViews()
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initBindingViews()
         replaceImageAndIconColor()
         resetPasswordButton.setOnClickListener {
             viewModel.passwordReset()
@@ -122,4 +111,6 @@ class ForgotPasswordFragment : BaseCommonFragment() {
         emailEditText = binding.forgotPasswordCommon.emailResetPasswordEditText
         progressBar = binding.forgotPasswordCommon.progressBarId.commonPb
     }
+
+    override fun getViewBinding() = FragmentForgotPasswordBinding.inflate(layoutInflater)
 }

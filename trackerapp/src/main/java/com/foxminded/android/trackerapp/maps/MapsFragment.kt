@@ -7,7 +7,10 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
@@ -17,7 +20,7 @@ import com.foxminded.android.locationtrackerkotlin.state.MapViewState
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.DEFAULT
 import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.SIGN_OUT
-import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
+import com.foxminded.android.locationtrackerkotlin.view.BaseFragment
 import com.foxminded.android.trackerapp.R
 import com.foxminded.android.trackerapp.databinding.FragmentMapsBinding
 import com.foxminded.android.trackerapp.di.config.App
@@ -28,11 +31,10 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import javax.inject.Inject
 
-class MapsFragment : BaseCommonFragment() {
+class MapsFragment : BaseFragment<FragmentMapsBinding>() {
 
     private val TAG = MapsFragment::class.java.simpleName
     private val args: MapsFragmentArgs by navArgs()
-    private lateinit var binding: FragmentMapsBinding
 
     @Inject
     lateinit var viewModel: MapsViewModel
@@ -51,18 +53,9 @@ class MapsFragment : BaseCommonFragment() {
         (activity?.application as App).mainComponent.injectMapsFragment(this)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        setHasOptionsMenu(true)
-        binding = FragmentMapsBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
         viewModel.requestAccountInfo(args.account)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
@@ -170,4 +163,6 @@ class MapsFragment : BaseCommonFragment() {
             }
             .create()
             .show()
+
+    override fun getViewBinding() = FragmentMapsBinding.inflate(layoutInflater)
 }

@@ -30,16 +30,16 @@ class SignInViewModel(
     private var password = MutableStateFlow("")
 
     fun checkEmailAndPasswordFieldsValue(
-        email1: String?,
-        password1: String?,
+        email1: String = "",
+        password1: String = "",
     ) {
         email1.also {
-            if (it != null) {
+            if (it != "") {
                 this.email.value = it
             }
         }
         password1.also {
-            if (it != null) {
+            if (it != "") {
                 this.password.value = it
             }
         }

@@ -8,9 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -23,16 +21,15 @@ import com.foxminded.android.locationtrackerkotlin.extensions.textFieldListener
 import com.foxminded.android.locationtrackerkotlin.signin.SignInViewModel
 import com.foxminded.android.locationtrackerkotlin.state.ViewState
 import com.foxminded.android.locationtrackerkotlin.utils.StateEnum.*
-import com.foxminded.android.locationtrackerkotlin.view.BaseCommonFragment
+import com.foxminded.android.locationtrackerkotlin.view.BaseFragment
 import com.foxminded.android.trackerapp.R
 import com.foxminded.android.trackerapp.databinding.FragmentSignInBinding
 import com.foxminded.android.trackerapp.di.config.App
 import javax.inject.Inject
 
-class SignInFragment : BaseCommonFragment() {
+class SignInFragment : BaseFragment<FragmentSignInBinding>() {
 
     private val TAG = SignInFragment::class.java.simpleName
-    private lateinit var binding: FragmentSignInBinding
     private lateinit var progressBar: ConstraintLayout
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
@@ -58,17 +55,9 @@ class SignInFragment : BaseCommonFragment() {
         viewModel.requestAccountInfo()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        binding = FragmentSignInBinding.inflate(inflater, container, false)
-        initBindingViews()
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initBindingViews()
 
         binding.loginFragmentCommon.signInButton.setOnClickListener { viewModel.signIn() }
         binding.loginFragmentCommon.phoneButton.setOnClickListener { displayPhoneAuthFragment() }
@@ -171,13 +160,13 @@ class SignInFragment : BaseCommonFragment() {
 
         lifecycleScope.launchWhenStarted {
             textFieldListener(emailEditText).collect {
-                viewModel.checkEmailAndPasswordFieldsValue(email1 = it, password1 = null)
+                viewModel.checkEmailAndPasswordFieldsValue(email1 = it)
             }
         }
 
         lifecycleScope.launchWhenStarted {
             textFieldListener(passwordEditText).collect {
-                viewModel.checkEmailAndPasswordFieldsValue(email1 = null, password1 = it)
+                viewModel.checkEmailAndPasswordFieldsValue(password1 = it)
             }
         }
     }
@@ -204,4 +193,6 @@ class SignInFragment : BaseCommonFragment() {
     private fun displaySignUpFragment() {
         findNavController().navigate(R.id.action_signInFragment_to_signUpFragment)
     }
+
+    override fun getViewBinding() = FragmentSignInBinding.inflate(layoutInflater)
 }
